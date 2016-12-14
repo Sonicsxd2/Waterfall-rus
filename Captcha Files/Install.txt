@@ -1,0 +1,3 @@
+Закинуть эту папку в готовый джарник с Waterfall
+
+Drop this folder into WaterFall.jar

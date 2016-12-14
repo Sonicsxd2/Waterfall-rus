@@ -1,0 +1,3948 @@
+From c5b60d94c37d19cd6e496ad47b626ab2a59b90da Mon Sep 17 00:00:00 2001
+From: Dimatert9 <mikimouse100@mail.ru>
+Date: Wed, 14 Dec 2016 19:10:09 +0200
+Subject: [PATCH] add captcha
+
+
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/extra/ChunkPacket.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/extra/ChunkPacket.java
+new file mode 100644
+index 0000000..e333bef
+--- /dev/null
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/extra/ChunkPacket.java
+@@ -0,0 +1,93 @@
++package net.md_5.bungee.protocol.packet.extra;
++
++import io.netty.buffer.ByteBuf;
++import java.beans.ConstructorProperties;
++import java.util.Arrays;
++import net.md_5.bungee.protocol.AbstractPacketHandler;
++import net.md_5.bungee.protocol.DefinedPacket;
++import net.md_5.bungee.protocol.ProtocolConstants;
++
++public class ChunkPacket extends DefinedPacket {
++
++    int x;
++    int z;
++    byte[] data;
++
++    public ChunkPacket(int x, int z) {
++        this.x = x;
++        this.z = z;
++        this.data = new byte[256];
++        Arrays.fill(this.data, (byte) 18);
++    }
++
++    public void read(ByteBuf buf) {}
++
++    public void write(ByteBuf buf, ProtocolConstants.Direction direction, int version) {
++
++    }
++
++    public void handle(AbstractPacketHandler handler) throws Exception {}
++
++    public int getX() {
++        return this.x;
++    }
++
++    public int getZ() {
++        return this.z;
++    }
++
++    public byte[] getData() {
++        return this.data;
++    }
++
++    public void setX(int x) {
++        this.x = x;
++    }
++
++    public void setZ(int z) {
++        this.z = z;
++    }
++
++    public void setData(byte[] data) {
++        this.data = data;
++    }
++
++    public String toString() {
++        return "ChunkPacket(x=" + this.getX() + ", z=" + this.getZ() + ", data=" + Arrays.toString(this.getData()) + ")";
++    }
++
++    public ChunkPacket() {}
++
++    @ConstructorProperties({ "x", "z", "data"})
++    public ChunkPacket(int x, int z, byte[] data) {
++        this.x = x;
++        this.z = z;
++        this.data = data;
++    }
++
++    public boolean equals(Object o) {
++        if (o == this) {
++            return true;
++        } else if (!(o instanceof ChunkPacket)) {
++            return false;
++        } else {
++            ChunkPacket other = (ChunkPacket) o;
++
++            return !other.canEqual(this) ? false : (this.getX() != other.getX() ? false : (this.getZ() != other.getZ() ? false : Arrays.equals(this.getData(), other.getData())));
++        }
++    }
++
++    protected boolean canEqual(Object other) {
++        return other instanceof ChunkPacket;
++    }
++
++    public int hashCode() {
++        boolean PRIME = true;
++        byte result = 1;
++        int result1 = result * 59 + this.getX();
++
++        result1 = result1 * 59 + this.getZ();
++        result1 = result1 * 59 + Arrays.hashCode(this.getData());
++        return result1;
++    }
++}
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/extra/MapDataPacket.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/extra/MapDataPacket.java
+new file mode 100644
+index 0000000..6cb413c
+--- /dev/null
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/extra/MapDataPacket.java
+@@ -0,0 +1,268 @@
++package net.md_5.bungee.protocol.packet.extra;
++
++import io.netty.buffer.ByteBuf;
++import java.beans.ConstructorProperties;
++import java.util.ArrayList;
++import java.util.List;
++import net.md_5.bungee.protocol.AbstractPacketHandler;
++import net.md_5.bungee.protocol.DefinedPacket;
++import net.md_5.bungee.protocol.ProtocolConstants;
++
++public class MapDataPacket extends DefinedPacket {
++
++    private int mapId;
++    private byte scale;
++    private MapDataPacket.Type type;
++    private MapDataPacket.MapData data;
++
++    public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) {
++
++    }
++
++    public void handle(AbstractPacketHandler handler) throws Exception {
++        throw new UnsupportedOperationException();
++    }
++
++    public int getMapId() {
++        return this.mapId;
++    }
++
++    public byte getScale() {
++        return this.scale;
++    }
++
++    public MapDataPacket.Type getType() {
++        return this.type;
++    }
++
++    public MapDataPacket.MapData getData() {
++        return this.data;
++    }
++
++    public void setMapId(int mapId) {
++        this.mapId = mapId;
++    }
++
++    public void setScale(byte scale) {
++        this.scale = scale;
++    }
++
++    public void setType(MapDataPacket.Type type) {
++        this.type = type;
++    }
++
++    public void setData(MapDataPacket.MapData data) {
++        this.data = data;
++    }
++
++    public String toString() {
++        return "MapDataPacket(mapId=" + this.getMapId() + ", scale=" + this.getScale() + ", type=" + this.getType() + ", data=" + this.getData() + ")";
++    }
++
++    public MapDataPacket() {}
++
++    @ConstructorProperties({ "mapId", "scale", "type", "data"})
++    public MapDataPacket(int mapId, byte scale, MapDataPacket.Type type, MapDataPacket.MapData data) {
++        this.mapId = mapId;
++        this.scale = scale;
++        this.type = type;
++        this.data = data;
++    }
++
++    public boolean equals(Object o) {
++        if (o == this) {
++            return true;
++        } else if (!(o instanceof MapDataPacket)) {
++            return false;
++        } else {
++            MapDataPacket other = (MapDataPacket) o;
++
++            if (!other.canEqual(this)) {
++                return false;
++            } else if (this.getMapId() != other.getMapId()) {
++                return false;
++            } else if (this.getScale() != other.getScale()) {
++                return false;
++            } else {
++                label40: {
++                    MapDataPacket.Type this$type = this.getType();
++                    MapDataPacket.Type other$type = other.getType();
++
++                    if (this$type == null) {
++                        if (other$type == null) {
++                            break label40;
++                        }
++                    } else if (this$type.equals(other$type)) {
++                        break label40;
++                    }
++
++                    return false;
++                }
++
++                MapDataPacket.MapData this$data = this.getData();
++                MapDataPacket.MapData other$data = other.getData();
++
++                if (this$data == null) {
++                    if (other$data != null) {
++                        return false;
++                    }
++                } else if (!this$data.equals(other$data)) {
++                    return false;
++                }
++
++                return true;
++            }
++        }
++    }
++
++    protected boolean canEqual(Object other) {
++        return other instanceof MapDataPacket;
++    }
++
++    public int hashCode() {
++        boolean PRIME = true;
++        byte result = 1;
++        int result1 = result * 59 + this.getMapId();
++
++        result1 = result1 * 59 + this.getScale();
++        MapDataPacket.Type $type = this.getType();
++
++        result1 = result1 * 59 + ($type == null ? 0 : $type.hashCode());
++        MapDataPacket.MapData $data = this.getData();
++
++        result1 = result1 * 59 + ($data == null ? 0 : $data.hashCode());
++        return result1;
++    }
++
++    public static class MapScale implements MapDataPacket.MapData {
++
++        private int scale;
++
++        public MapScale(int scale) {
++            this.scale = scale;
++        }
++
++        public int getScale() {
++            return this.scale;
++        }
++    }
++
++    public static class MapPlayer {
++
++        private int iconSize;
++        private int iconRotation;
++        private int centerX;
++        private int centerZ;
++
++        public MapPlayer(int iconSize, int iconRotation, int centerX, int centerZ) {
++            this.iconSize = iconSize;
++            this.iconRotation = iconRotation;
++            this.centerX = centerX;
++            this.centerZ = centerZ;
++        }
++
++        public int getIconSize() {
++            return this.iconSize;
++        }
++
++        public int getIconRotation() {
++            return this.iconRotation;
++        }
++
++        public int getCenterX() {
++            return this.centerX;
++        }
++
++        public int getCenterZ() {
++            return this.centerZ;
++        }
++    }
++
++    public static class MapPlayers implements MapDataPacket.MapData {
++
++        private List players = new ArrayList();
++
++        public MapPlayers(List players) {
++            this.players = players;
++        }
++
++        public List getPlayers() {
++            return new ArrayList(this.players);
++        }
++    }
++
++    public static class MapDataNew implements MapDataPacket.MapData {
++
++        private int columns;
++        private int rows;
++        private int x;
++        private int y;
++        private byte[] data;
++
++        public MapDataNew(int columns, int rows, int x, int y, byte[] data) {
++            this.columns = columns;
++            this.rows = rows;
++            this.x = x;
++            this.y = y;
++            this.data = data;
++        }
++
++        public int getColumns() {
++            return this.columns;
++        }
++
++        public int getRows() {
++            return this.rows;
++        }
++
++        public int getX() {
++            return this.x;
++        }
++
++        public int getY() {
++            return this.y;
++        }
++
++        public byte[] getData() {
++            return this.data;
++        }
++    }
++
++    public static class MapColumnUpdate implements MapDataPacket.MapData {
++
++        private int x;
++        private int y;
++        private int height;
++        private byte[] colors;
++
++        public MapColumnUpdate(int x, int y, int height, byte[] colors) {
++            this.x = x;
++            this.y = y;
++            this.height = height;
++            this.colors = colors;
++        }
++
++        public int getX() {
++            return this.x;
++        }
++
++        public int getY() {
++            return this.y;
++        }
++
++        public int getHeight() {
++            return this.height;
++        }
++
++        public byte[] getColors() {
++            return this.colors;
++        }
++    }
++
++    public interface MapData {    }
++
++    public static enum Type {
++
++        IMAGE, PLAYERS, SCALE;
++    }
++}
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/extra/PlayerAbilities.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/extra/PlayerAbilities.java
+new file mode 100644
+index 0000000..37abe18
+--- /dev/null
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/extra/PlayerAbilities.java
+@@ -0,0 +1,84 @@
++package net.md_5.bungee.protocol.packet.extra;
++
++import io.netty.buffer.ByteBuf;
++import java.beans.ConstructorProperties;
++import net.md_5.bungee.protocol.AbstractPacketHandler;
++import net.md_5.bungee.protocol.DefinedPacket;
++
++public class PlayerAbilities extends DefinedPacket {
++
++    byte flags;
++    float speed;
++    float field;
++
++    public void write(ByteBuf buf) {
++        buf.writeByte(this.flags);
++        buf.writeFloat(this.speed);
++        buf.writeFloat(this.field);
++    }
++
++    public void handle(AbstractPacketHandler handler) throws Exception {}
++
++    public byte getFlags() {
++        return this.flags;
++    }
++
++    public float getSpeed() {
++        return this.speed;
++    }
++
++    public float getField() {
++        return this.field;
++    }
++
++    public void setFlags(byte flags) {
++        this.flags = flags;
++    }
++
++    public void setSpeed(float speed) {
++        this.speed = speed;
++    }
++
++    public void setField(float field) {
++        this.field = field;
++    }
++
++    public String toString() {
++        return "PlayerAbilities(flags=" + this.getFlags() + ", speed=" + this.getSpeed() + ", field=" + this.getField() + ")";
++    }
++
++    public PlayerAbilities() {}
++
++    @ConstructorProperties({ "flags", "speed", "field"})
++    public PlayerAbilities(byte flags, float speed, float field) {
++        this.flags = flags;
++        this.speed = speed;
++        this.field = field;
++    }
++
++    public boolean equals(Object o) {
++        if (o == this) {
++            return true;
++        } else if (!(o instanceof PlayerAbilities)) {
++            return false;
++        } else {
++            PlayerAbilities other = (PlayerAbilities) o;
++
++            return !other.canEqual(this) ? false : (this.getFlags() != other.getFlags() ? false : (Float.compare(this.getSpeed(), other.getSpeed()) != 0 ? false : Float.compare(this.getField(), other.getField()) == 0));
++        }
++    }
++
++    protected boolean canEqual(Object other) {
++        return other instanceof PlayerAbilities;
++    }
++
++    public int hashCode() {
++        boolean PRIME = true;
++        byte result = 1;
++        int result1 = result * 59 + this.getFlags();
++
++        result1 = result1 * 59 + Float.floatToIntBits(this.getSpeed());
++        result1 = result1 * 59 + Float.floatToIntBits(this.getField());
++        return result1;
++    }
++}
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/extra/PlayerPositionRotation.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/extra/PlayerPositionRotation.java
+new file mode 100644
+index 0000000..4fb50b9
+--- /dev/null
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/extra/PlayerPositionRotation.java
+@@ -0,0 +1,111 @@
++package net.md_5.bungee.protocol.packet.extra;
++
++import io.netty.buffer.ByteBuf;
++import java.beans.ConstructorProperties;
++import net.md_5.bungee.protocol.AbstractPacketHandler;
++import net.md_5.bungee.protocol.DefinedPacket;
++import net.md_5.bungee.protocol.ProtocolConstants;
++
++public class PlayerPositionRotation extends DefinedPacket {
++
++    private double x;
++    private double y;
++    private double z;
++    private float yaw;
++    private float pitch;
++
++    public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) {
++
++    }
++
++    public void handle(AbstractPacketHandler handler) throws Exception {
++        throw new UnsupportedOperationException();
++    }
++
++    public double getX() {
++        return this.x;
++    }
++
++    public double getY() {
++        return this.y;
++    }
++
++    public double getZ() {
++        return this.z;
++    }
++
++    public float getYaw() {
++        return this.yaw;
++    }
++
++    public float getPitch() {
++        return this.pitch;
++    }
++
++    public void setX(double x) {
++        this.x = x;
++    }
++
++    public void setY(double y) {
++        this.y = y;
++    }
++
++    public void setZ(double z) {
++        this.z = z;
++    }
++
++    public void setYaw(float yaw) {
++        this.yaw = yaw;
++    }
++
++    public void setPitch(float pitch) {
++        this.pitch = pitch;
++    }
++
++    public String toString() {
++        return "PlayerPositionRotation(x=" + this.getX() + ", y=" + this.getY() + ", z=" + this.getZ() + ", yaw=" + this.getYaw() + ", pitch=" + this.getPitch() + ")";
++    }
++
++    public PlayerPositionRotation() {}
++
++    @ConstructorProperties({ "x", "y", "z", "yaw", "pitch"})
++    public PlayerPositionRotation(double x, double y, double z, float yaw, float pitch) {
++        this.x = x;
++        this.y = y;
++        this.z = z;
++        this.yaw = yaw;
++        this.pitch = pitch;
++    }
++
++    public boolean equals(Object o) {
++        if (o == this) {
++            return true;
++        } else if (!(o instanceof PlayerPositionRotation)) {
++            return false;
++        } else {
++            PlayerPositionRotation other = (PlayerPositionRotation) o;
++
++            return !other.canEqual(this) ? false : (Double.compare(this.getX(), other.getX()) != 0 ? false : (Double.compare(this.getY(), other.getY()) != 0 ? false : (Double.compare(this.getZ(), other.getZ()) != 0 ? false : (Float.compare(this.getYaw(), other.getYaw()) != 0 ? false : Float.compare(this.getPitch(), other.getPitch()) == 0))));
++        }
++    }
++
++    protected boolean canEqual(Object other) {
++        return other instanceof PlayerPositionRotation;
++    }
++
++    public int hashCode() {
++        boolean PRIME = true;
++        byte result = 1;
++        long $x = Double.doubleToLongBits(this.getX());
++        int result1 = result * 59 + (int) ($x >>> 32 ^ $x);
++        long $y = Double.doubleToLongBits(this.getY());
++
++        result1 = result1 * 59 + (int) ($y >>> 32 ^ $y);
++        long $z = Double.doubleToLongBits(this.getZ());
++
++        result1 = result1 * 59 + (int) ($z >>> 32 ^ $z);
++        result1 = result1 * 59 + Float.floatToIntBits(this.getYaw());
++        result1 = result1 * 59 + Float.floatToIntBits(this.getPitch());
++        return result1;
++    }
++}
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/extra/SetSlot.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/extra/SetSlot.java
+new file mode 100644
+index 0000000..b211048
+--- /dev/null
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/extra/SetSlot.java
+@@ -0,0 +1,95 @@
++package net.md_5.bungee.protocol.packet.extra;
++
++import io.netty.buffer.ByteBuf;
++import java.beans.ConstructorProperties;
++import net.md_5.bungee.protocol.AbstractPacketHandler;
++import net.md_5.bungee.protocol.DefinedPacket;
++import net.md_5.bungee.protocol.ProtocolConstants;
++
++public class SetSlot extends DefinedPacket {
++
++    private int windowId;
++    private int slot;
++    private int item;
++    private int data;
++
++    public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) {
++    }
++
++    public void handle(AbstractPacketHandler handler) throws Exception {
++        throw new UnsupportedOperationException();
++    }
++
++    public int getWindowId() {
++        return this.windowId;
++    }
++
++    public int getSlot() {
++        return this.slot;
++    }
++
++    public int getItem() {
++        return this.item;
++    }
++
++    public int getData() {
++        return this.data;
++    }
++
++    public void setWindowId(int windowId) {
++        this.windowId = windowId;
++    }
++
++    public void setSlot(int slot) {
++        this.slot = slot;
++    }
++
++    public void setItem(int item) {
++        this.item = item;
++    }
++
++    public void setData(int data) {
++        this.data = data;
++    }
++
++    public String toString() {
++        return "SetSlot(windowId=" + this.getWindowId() + ", slot=" + this.getSlot() + ", item=" + this.getItem() + ", data=" + this.getData() + ")";
++    }
++
++    public SetSlot() {}
++
++    @ConstructorProperties({ "windowId", "slot", "item", "data"})
++    public SetSlot(int windowId, int slot, int item, int data) {
++        this.windowId = windowId;
++        this.slot = slot;
++        this.item = item;
++        this.data = data;
++    }
++
++    public boolean equals(Object o) {
++        if (o == this) {
++            return true;
++        } else if (!(o instanceof SetSlot)) {
++            return false;
++        } else {
++            SetSlot other = (SetSlot) o;
++
++            return !other.canEqual(this) ? false : (this.getWindowId() != other.getWindowId() ? false : (this.getSlot() != other.getSlot() ? false : (this.getItem() != other.getItem() ? false : this.getData() == other.getData())));
++        }
++    }
++
++    protected boolean canEqual(Object other) {
++        return other instanceof SetSlot;
++    }
++
++    public int hashCode() {
++        boolean PRIME = true;
++        byte result = 1;
++        int result1 = result * 59 + this.getWindowId();
++
++        result1 = result1 * 59 + this.getSlot();
++        result1 = result1 * 59 + this.getItem();
++        result1 = result1 * 59 + this.getData();
++        return result1;
++    }
++}
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/extra/SpawnPosition.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/extra/SpawnPosition.java
+new file mode 100644
+index 0000000..1ad1b0a
+--- /dev/null
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/extra/SpawnPosition.java
+@@ -0,0 +1,84 @@
++package net.md_5.bungee.protocol.packet.extra;
++
++import io.netty.buffer.ByteBuf;
++import java.beans.ConstructorProperties;
++import net.md_5.bungee.protocol.AbstractPacketHandler;
++import net.md_5.bungee.protocol.DefinedPacket;
++import net.md_5.bungee.protocol.ProtocolConstants;
++
++public class SpawnPosition extends DefinedPacket {
++
++    private int x;
++    private int y;
++    private int z;
++
++    public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) {
++    }
++
++    public void handle(AbstractPacketHandler handler) throws Exception {
++        throw new UnsupportedOperationException();
++    }
++
++    public int getX() {
++        return this.x;
++    }
++
++    public int getY() {
++        return this.y;
++    }
++
++    public int getZ() {
++        return this.z;
++    }
++
++    public void setX(int x) {
++        this.x = x;
++    }
++
++    public void setY(int y) {
++        this.y = y;
++    }
++
++    public void setZ(int z) {
++        this.z = z;
++    }
++
++    public String toString() {
++        return "SpawnPosition(x=" + this.getX() + ", y=" + this.getY() + ", z=" + this.getZ() + ")";
++    }
++
++    public SpawnPosition() {}
++
++    @ConstructorProperties({ "x", "y", "z"})
++    public SpawnPosition(int x, int y, int z) {
++        this.x = x;
++        this.y = y;
++        this.z = z;
++    }
++
++    public boolean equals(Object o) {
++        if (o == this) {
++            return true;
++        } else if (!(o instanceof SpawnPosition)) {
++            return false;
++        } else {
++            SpawnPosition other = (SpawnPosition) o;
++
++            return !other.canEqual(this) ? false : (this.getX() != other.getX() ? false : (this.getY() != other.getY() ? false : this.getZ() == other.getZ()));
++        }
++    }
++
++    protected boolean canEqual(Object other) {
++        return other instanceof SpawnPosition;
++    }
++
++    public int hashCode() {
++        boolean PRIME = true;
++        byte result = 1;
++        int result1 = result * 59 + this.getX();
++
++        result1 = result1 * 59 + this.getY();
++        result1 = result1 * 59 + this.getZ();
++        return result1;
++    }
++}
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/extra/WindowItems.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/extra/WindowItems.java
+new file mode 100644
+index 0000000..63467c3
+--- /dev/null
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/extra/WindowItems.java
+@@ -0,0 +1,82 @@
++package net.md_5.bungee.protocol.packet.extra;
++
++import io.netty.buffer.ByteBuf;
++import java.beans.ConstructorProperties;
++import net.md_5.bungee.protocol.AbstractPacketHandler;
++import net.md_5.bungee.protocol.DefinedPacket;
++import net.md_5.bungee.protocol.ProtocolConstants;
++
++public class WindowItems extends DefinedPacket {
++
++    private int windowId;
++    private int slot;
++    private int item;
++
++    public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) {
++    }
++
++    public void handle(AbstractPacketHandler handler) throws Exception {}
++
++    public int getWindowId() {
++        return this.windowId;
++    }
++
++    public int getSlot() {
++        return this.slot;
++    }
++
++    public int getItem() {
++        return this.item;
++    }
++
++    public void setWindowId(int windowId) {
++        this.windowId = windowId;
++    }
++
++    public void setSlot(int slot) {
++        this.slot = slot;
++    }
++
++    public void setItem(int item) {
++        this.item = item;
++    }
++
++    public String toString() {
++        return "WindowItems(windowId=" + this.getWindowId() + ", slot=" + this.getSlot() + ", item=" + this.getItem() + ")";
++    }
++
++    public WindowItems() {}
++
++    @ConstructorProperties({ "windowId", "slot", "item"})
++    public WindowItems(int windowId, int slot, int item) {
++        this.windowId = windowId;
++        this.slot = slot;
++        this.item = item;
++    }
++
++    public boolean equals(Object o) {
++        if (o == this) {
++            return true;
++        } else if (!(o instanceof WindowItems)) {
++            return false;
++        } else {
++            WindowItems other = (WindowItems) o;
++
++            return !other.canEqual(this) ? false : (this.getWindowId() != other.getWindowId() ? false : (this.getSlot() != other.getSlot() ? false : this.getItem() == other.getItem()));
++        }
++    }
++
++    protected boolean canEqual(Object other) {
++        return other instanceof WindowItems;
++    }
++
++    public int hashCode() {
++        boolean PRIME = true;
++        byte result = 1;
++        int result1 = result * 59 + this.getWindowId();
++
++        result1 = result1 * 59 + this.getSlot();
++        result1 = result1 * 59 + this.getItem();
++        return result1;
++    }
++}
+diff --git a/proxy/src/main/java/com/github/cage/Cage.java b/proxy/src/main/java/com/github/cage/Cage.java
+new file mode 100644
+index 0000000..65f0b77
+--- /dev/null
++++ b/proxy/src/main/java/com/github/cage/Cage.java
+@@ -0,0 +1,278 @@
++/*
++ * Copyright 2011 Király Attila
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *   http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++package com.github.cage;
++
++import java.awt.Color;
++import java.awt.Font;
++import java.awt.image.BufferedImage;
++import java.io.ByteArrayOutputStream;
++import java.io.IOException;
++import java.io.OutputStream;
++import java.util.Iterator;
++import java.util.Random;
++
++import javax.imageio.IIOImage;
++import javax.imageio.ImageIO;
++import javax.imageio.ImageTypeSpecifier;
++import javax.imageio.ImageWriteParam;
++import javax.imageio.ImageWriter;
++import javax.imageio.stream.ImageOutputStream;
++
++import com.github.cage.image.Painter;
++import com.github.cage.image.RgbColorGenerator;
++import com.github.cage.token.RandomTokenGenerator;
++
++/**
++ * Convenient entry class to control captcha generation. This class is thread
++ * safe. Example usage:
++ * 
++ * <p>
++ * 
++ * <pre>
++ * <code>
++ * Cage cage = new {@link GCage}(); // lets make some "G" template captchas
++ * // use new {@link YCage}() for "Y" template or configure it yourself with
++ * // one of the Cage {@link #Cage(Painter, IGenerator, IGenerator, String,
++ * Float, IGenerator, Random) constructors}.
++ * 
++ * // ...
++ * 
++ * String token1 = cage.{@link #getTokenGenerator() getTokenGenerator()}.next();
++ * String token2 = cage.{@link #getTokenGenerator() getTokenGenerator()}.next();
++ * 
++ * cage.{@link #draw(String, OutputStream) draw}(token1, someOutputstream1);
++ * cage.{@link #draw(String, OutputStream) draw}(token2, someOutputstream2);
++ * 
++ * </code>
++ * </pre>
++ * 
++ * </p>
++ * 
++ * @author akiraly
++ * 
++ */
++public class Cage {
++	/**
++	 * Default compress ratio for image encoders.
++	 */
++	public static final Float DEFAULT_COMPRESS_RATIO = 0.5f;
++
++	/**
++	 * Default image encoding format.
++	 */
++	public static final String DEFAULT_FORMAT = "jpeg";
++
++	private final Painter painter;
++	private final IGenerator<Font> fonts;
++	private final IGenerator<Color> foregrounds;
++	private final String format;
++	private final Float compressRatio;
++	private final IGenerator<String> tokenGenerator;
++
++	/**
++	 * Default constructor. Calls
++	 * {@link Cage#Cage(Painter, IGenerator, IGenerator, String, Float, IGenerator, Random)}
++	 */
++	public Cage() {
++		this(null, null, null, null, DEFAULT_COMPRESS_RATIO, null, null);
++	}
++
++	/**
++	 * Constructor.
++	 * 
++	 * @param painter
++	 *            to be used for painting, can be null
++	 * @param fonts
++	 *            generator used to generate fonts for texts, defaults to a
++	 *            random chooser from some predefined set of fonts, can be null
++	 * @param foregrounds
++	 *            generator used to generate colors for texts, defaults to a
++	 *            random "not-bright-so-it-is-readable-on-white" color
++	 *            generator, can be null
++	 * @param format
++	 *            output format, default "jpeg", can be null
++	 * @param compressRatio
++	 *            a number in [0f, 1f] interval if compression should be used
++	 *            with the output format. The format must support compression
++	 *            (like jpeg and png). If null no compression is done.
++	 * @param tokenGenerator
++	 *            a custom String token generator, can be null. If null is
++	 *            passed a default is created. It is not used by Cage it is only
++	 *            stored for convenience. Can be retrieved by
++	 *            {@link #getTokenGenerator()}.
++	 * @param rnd
++	 *            random generator to be used, can be null
++	 */
++	public Cage(Painter painter, IGenerator<Font> fonts,
++			IGenerator<Color> foregrounds, String format, Float compressRatio,
++			IGenerator<String> tokenGenerator, Random rnd) {
++		if (rnd == null) {
++			rnd = new Random();
++		}
++		this.painter = painter != null ? painter : new Painter(rnd);
++		int defFontHeight = this.painter.getHeight() / 2;
++		this.fonts = fonts != null ? fonts : new ObjectRoulette<Font>(rnd, //
++				new Font(Font.SANS_SERIF, Font.PLAIN, defFontHeight), //
++				// new Font(Font.SANS_SERIF, Font.ITALIC, defFontHeight),//
++				new Font(Font.SERIF, Font.PLAIN, defFontHeight), //
++				// new Font(Font.SERIF, Font.ITALIC, defFontHeight), //
++				new Font(Font.MONOSPACED, Font.BOLD, defFontHeight)); //
++		// new Font(Font.MONOSPACED, Font.ITALIC, defFontHeight));
++		this.foregrounds = foregrounds != null ? foregrounds
++				: new RgbColorGenerator(rnd);
++		this.format = format != null ? format : DEFAULT_FORMAT;
++		this.compressRatio = compressRatio;
++		this.tokenGenerator = tokenGenerator != null ? tokenGenerator
++				: new RandomTokenGenerator(rnd);
++	}
++
++	/**
++	 * Generate an image and serialize it to the output. This method can call
++	 * {@link OutputStream#close()} on the supplied output stream.
++	 * 
++	 * @param text
++	 *            to be drawn on the image
++	 * @param ostream
++	 *            captcha image is serialized to this
++	 * @throws IOException
++	 *             if IO error occurs.
++	 */
++	public void draw(String text, OutputStream ostream) throws IOException {
++		BufferedImage img = drawImage(text);
++		serialize(img, ostream);
++	}
++
++	/**
++	 * Generate an image and return it in a byte array.
++	 * 
++	 * @param text
++	 *            to be drawn on the image
++	 * @return byte array holding the serialized generated image
++	 */
++	public byte[] draw(String text) {
++		ByteArrayOutputStream baos = new ByteArrayOutputStream();
++		try {
++			try {
++				draw(text, baos);
++			} finally {
++				baos.close();
++			}
++		} catch (IOException e) {
++			// IO errors should not happen we were writing to memory
++			throw new RuntimeException(
++					"IO error while writing captcha image to memory.", e);
++		}
++
++		return baos.toByteArray();
++	}
++
++	/**
++	 * Generates a captcha image.
++	 * 
++	 * @param text
++	 *            to be drawn
++	 * @return generated image
++	 */
++	public BufferedImage drawImage(String text) {
++		Font font = fonts.next();
++		Color fground = foregrounds.next();
++		return painter.draw(font, fground, text);
++	}
++
++	/**
++	 * Serializes an image to an {@link OutputStream}. This method can call
++	 * {@link OutputStream#close()} on the supplied output stream.
++	 * 
++	 * @param img
++	 *            to be serialized
++	 * @param ostream
++	 *            to be written to
++	 * @throws IOException
++	 *             if IO error occurs.
++	 */
++	protected void serialize(BufferedImage img, OutputStream ostream)
++			throws IOException {
++		ImageTypeSpecifier type = ImageTypeSpecifier
++				.createFromRenderedImage(img);
++		Iterator<ImageWriter> iwi = ImageIO.getImageWriters(type, this.format);
++		if (iwi == null || !iwi.hasNext()) {
++			throw new IllegalStateException(
++					"No image writer found for format = " + this.format);
++		}
++		ImageWriter iw = iwi.next();
++		try {
++			ImageWriteParam iwp;
++			if (compressRatio != null) {
++				iwp = iw.getDefaultWriteParam();
++				iwp.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
++				iwp.setCompressionQuality(compressRatio);
++			} else {
++				iwp = null;
++			}
++			ImageOutputStream ios = ImageIO.createImageOutputStream(ostream);
++			try {
++				iw.setOutput(ios);
++				iw.write(null, new IIOImage(img, null, null), iwp);
++			} finally {
++				ios.close();
++			}
++		} finally {
++			iw.dispose();
++		}
++	}
++
++	/**
++	 * @return object used to draw the image, not null
++	 */
++	public Painter getPainter() {
++		return painter;
++	}
++
++	/**
++	 * @return font generator used to choose a font, not null
++	 */
++	public IGenerator<Font> getFonts() {
++		return fonts;
++	}
++
++	/**
++	 * @return foreground generator used to choose a text color, not null
++	 */
++	public IGenerator<Color> getForegrounds() {
++		return foregrounds;
++	}
++
++	/**
++	 * @return used image encoding format, like "jpeg", not null
++	 */
++	public String getFormat() {
++		return format;
++	}
++
++	/**
++	 * @return compress ratio used by image encoding, can be null
++	 */
++	public Float getCompressRatio() {
++		return compressRatio;
++	}
++
++	/**
++	 * @return token generator to produce strings for the image, not null
++	 */
++	public IGenerator<String> getTokenGenerator() {
++		return tokenGenerator;
++	}
++}
+diff --git a/proxy/src/main/java/com/github/cage/GCage.java b/proxy/src/main/java/com/github/cage/GCage.java
+new file mode 100644
+index 0000000..61b284e
+--- /dev/null
++++ b/proxy/src/main/java/com/github/cage/GCage.java
+@@ -0,0 +1,30 @@
++/*
++ * Copyright 2011 Király Attila
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *   http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++package com.github.cage;
++
++/**
++ * Creates and configures a {@link Cage} instance that can generate captcha
++ * images similar to Google's. This is the "G" template. Simply create an
++ * instance with <code>new GCage()</code> and you can generate images. See
++ * {@link Cage} for more info.
++ * 
++ * This class is thread safe.
++ * 
++ * @author akiraly
++ */
++public class GCage extends com.github.cage.Cage {
++
++}
+diff --git a/proxy/src/main/java/com/github/cage/IGenerator.java b/proxy/src/main/java/com/github/cage/IGenerator.java
+new file mode 100644
+index 0000000..3685cad
+--- /dev/null
++++ b/proxy/src/main/java/com/github/cage/IGenerator.java
+@@ -0,0 +1,34 @@
++/*
++ * Copyright 2011 Király Attila
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *   http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++package com.github.cage;
++
++/**
++ * Object generator.
++ * 
++ * @param <T>
++ *            the type of objects generated by this class
++ * 
++ * @author akiraly
++ */
++public interface IGenerator<T> {
++	/**
++	 * Returns an object with type <code>T</code> on every call. The returned
++	 * object does not have to be a new instance.
++	 * 
++	 * @return generated object
++	 */
++	T next();
++}
+diff --git a/proxy/src/main/java/com/github/cage/IGeneratorFactory.java b/proxy/src/main/java/com/github/cage/IGeneratorFactory.java
+new file mode 100644
+index 0000000..40ba354
+--- /dev/null
++++ b/proxy/src/main/java/com/github/cage/IGeneratorFactory.java
+@@ -0,0 +1,28 @@
++/*
++ * Copyright 2011 Király Attila
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *   http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++package com.github.cage;
++
++/**
++ * Factory creating {@link IGenerator}s.
++ * 
++ * @param <T>
++ *            the type of objects generated by the generators created by this
++ *            object.
++ * 
++ * @author akiraly
++ */
++public interface IGeneratorFactory<T> extends IGenerator<IGenerator<T>> {
++}
+diff --git a/proxy/src/main/java/com/github/cage/ObjectRoulette.java b/proxy/src/main/java/com/github/cage/ObjectRoulette.java
+new file mode 100644
+index 0000000..6d0cc94
+--- /dev/null
++++ b/proxy/src/main/java/com/github/cage/ObjectRoulette.java
+@@ -0,0 +1,61 @@
++/*
++ * Copyright 2011 Király Attila
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *   http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++package com.github.cage;
++
++import java.util.Random;
++
++/**
++ * An {@link IGenerator} implementation that returns a randomly chosen element
++ * from a predefined set of objects when {@link #next()} is called. This class
++ * is thread safe.
++ * 
++ * @param <T>
++ *            the type of objects generated by this class
++ * 
++ * @author akiraly
++ */
++public class ObjectRoulette<T> implements IGenerator<T> {
++	private final T[] candidates;
++
++	private final Random rnd;
++
++	/**
++	 * Constructor.
++	 * 
++	 * @param rnd
++	 *            random generator to be used, can be null
++	 * @param candidates
++	 *            the set of objects to choose from; not null, not empty
++	 */
++	public ObjectRoulette(Random rnd, T... candidates) {
++		if (candidates == null || candidates.length < 1) {
++			throw new IllegalArgumentException("No candidates given.");
++		}
++		this.candidates = candidates;
++		this.rnd = rnd != null ? rnd : new Random();
++	}
++
++	public T next() {
++		return candidates[rnd.nextInt(candidates.length)];
++	}
++
++	/**
++	 * @return the set of objects to choose from
++	 */
++	public T[] getCandidates() {
++		return candidates;
++	}
++}
+diff --git a/proxy/src/main/java/com/github/cage/YCage.java b/proxy/src/main/java/com/github/cage/YCage.java
+new file mode 100644
+index 0000000..e367834
+--- /dev/null
++++ b/proxy/src/main/java/com/github/cage/YCage.java
+@@ -0,0 +1,96 @@
++/*
++ * Copyright 2011 Király Attila
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *   http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++package com.github.cage;
++
++import java.awt.Color;
++import java.util.Locale;
++import java.util.Random;
++
++import com.github.cage.image.ConstantColorGenerator;
++import com.github.cage.image.EffectConfig;
++import com.github.cage.image.Painter;
++import com.github.cage.image.ScaleConfig;
++import com.github.cage.token.RandomCharacterGeneratorFactory;
++import com.github.cage.token.RandomTokenGenerator;
++
++/**
++ * Creates and configures a {@link Cage} instance that can generate captcha
++ * images similar to Yahoo's. This is the "Y" template. Simply create an
++ * instance with <code>new YCage()</code> and you can generate images. See
++ * {@link Cage} for more info.
++ * 
++ * This class is thread safe.
++ * 
++ * @author akiraly
++ */
++public class YCage extends com.github.cage.Cage {
++	/**
++	 * Height of CAPTCHA image.
++	 */
++	protected static final int HEIGHT = 80;
++
++	/**
++	 * Width of CAPTCHA image.
++	 */
++	protected static final int WIDTH = 290;
++
++	/**
++	 * Character set supplied to the {@link RandomTokenGenerator} used by this
++	 * template.
++	 */
++	protected static final char[] TOKEN_DEFAULT_CHARACTER_SET = (new String(
++			RandomCharacterGeneratorFactory.DEFAULT_DEFAULT_CHARACTER_SET)
++			.replaceAll("b|f|i|j|l|m|o|t", "")
++			+ new String(
++					RandomCharacterGeneratorFactory.DEFAULT_DEFAULT_CHARACTER_SET)
++					.replaceAll("c|i|o", "").toUpperCase(Locale.ENGLISH) + new String(
++			RandomCharacterGeneratorFactory.ARABIC_NUMERALS).replaceAll(
++			"0|1|9", "")).toCharArray();
++
++	/**
++	 * Minimum length of token.
++	 */
++	protected static final int TOKEN_LEN_MIN = 6;
++
++	/**
++	 * Maximum length of token is {@value #TOKEN_LEN_MIN} +
++	 * {@value #TOKEN_LEN_DELTA}.
++	 */
++	protected static final int TOKEN_LEN_DELTA = 2;
++
++	/**
++	 * Constructor.
++	 */
++	public YCage() {
++		this(new Random());
++	}
++
++	/**
++	 * Constructor.
++	 * 
++	 * @param rnd
++	 *            object used for random value generation. Not null.
++	 */
++	protected YCage(Random rnd) {
++		super(new Painter(WIDTH, HEIGHT, null, null, new EffectConfig(true,
++				true, true, false, new ScaleConfig(0.55f, 0.55f)), rnd), null,
++				new ConstantColorGenerator(Color.BLACK), null,
++				Cage.DEFAULT_COMPRESS_RATIO, new RandomTokenGenerator(rnd,
++						new RandomCharacterGeneratorFactory(
++								TOKEN_DEFAULT_CHARACTER_SET, null, rnd),
++						TOKEN_LEN_MIN, TOKEN_LEN_DELTA), rnd);
++	}
++}
+diff --git a/proxy/src/main/java/com/github/cage/image/ConstantColorGenerator.java b/proxy/src/main/java/com/github/cage/image/ConstantColorGenerator.java
+new file mode 100644
+index 0000000..e6deff6
+--- /dev/null
++++ b/proxy/src/main/java/com/github/cage/image/ConstantColorGenerator.java
+@@ -0,0 +1,46 @@
++/*
++ * Copyright 2011 Király Attila
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *   http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++package com.github.cage.image;
++
++import java.awt.Color;
++
++import com.github.cage.IGenerator;
++
++/**
++ * {@link IGenerator} implementation that returns always the same {@link Color}.
++ * This class is thread safe.
++ * 
++ * @author akiraly
++ * 
++ */
++public class ConstantColorGenerator implements IGenerator<Color> {
++	private final Color color;
++
++	/**
++	 * Constructor.
++	 * 
++	 * @param color
++	 *            not null
++	 */
++	public ConstantColorGenerator(Color color) {
++		this.color = color;
++	}
++
++	public Color next() {
++		return color;
++	}
++
++}
+diff --git a/proxy/src/main/java/com/github/cage/image/EffectConfig.java b/proxy/src/main/java/com/github/cage/image/EffectConfig.java
+new file mode 100644
+index 0000000..e4b4654
+--- /dev/null
++++ b/proxy/src/main/java/com/github/cage/image/EffectConfig.java
+@@ -0,0 +1,103 @@
++/*
++ * Copyright 2011 Király Attila
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *   http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++package com.github.cage.image;
++
++/**
++ * Class to represent used effect configuration by {@link Painter}.
++ * 
++ * @author akiraly
++ */
++public class EffectConfig {
++	private final boolean rippleEnabled;
++	private final boolean blurEnabled;
++	private final boolean outlineEnabled;
++	private final boolean rotateEnabled;
++	private final ScaleConfig scaleConfig;
++
++	/**
++	 * Constructor.
++	 */
++	public EffectConfig() {
++		this(true, true, false, true, null);
++	}
++
++	/**
++	 * Constructor.
++	 * 
++	 * @param rippleEnabled
++	 *            waving effect should be used, default true, disabling this
++	 *            helps performance
++	 * @param blurEnabled
++	 *            should the image be blurred, default true, disabling this
++	 *            helps performance
++	 * @param outlineEnabled
++	 *            should a shifted, font colored outline be drawn behind the
++	 *            characters, default false, disabling this helps performance
++	 *            slightly
++	 * @param rotateEnabled
++	 *            should the letters be rotated independently, default true,
++	 *            disabling this helps performance slightly
++	 * @param scaleConfig
++	 *            scaling information for the captcha image, can be null
++	 */
++	public EffectConfig(boolean rippleEnabled, boolean blurEnabled,
++			boolean outlineEnabled, boolean rotateEnabled,
++			ScaleConfig scaleConfig) {
++		super();
++		this.rippleEnabled = rippleEnabled;
++		this.blurEnabled = blurEnabled;
++		this.outlineEnabled = outlineEnabled;
++		this.rotateEnabled = rotateEnabled;
++		this.scaleConfig = scaleConfig != null ? scaleConfig
++				: new ScaleConfig();
++	}
++
++	/**
++	 * @return true if the image will be rippled (waved)
++	 */
++	public boolean isRippleEnabled() {
++		return rippleEnabled;
++	}
++
++	/**
++	 * @return true if the image will be blurred
++	 */
++	public boolean isBlurEnabled() {
++		return blurEnabled;
++	}
++
++	/**
++	 * @return true if outline shadow for text will be drawn on the image
++	 */
++	public boolean isOutlineEnabled() {
++		return outlineEnabled;
++	}
++
++	/**
++	 * @return true if the text letters will be rotated before drawn on the
++	 *         image
++	 */
++	public boolean isRotateEnabled() {
++		return rotateEnabled;
++	}
++
++	/**
++	 * @return scaling information for the captcha image, not null
++	 */
++	public ScaleConfig getScaleConfig() {
++		return scaleConfig;
++	}
++}
+diff --git a/proxy/src/main/java/com/github/cage/image/Painter.java b/proxy/src/main/java/com/github/cage/image/Painter.java
+new file mode 100644
+index 0000000..df7046d
+--- /dev/null
++++ b/proxy/src/main/java/com/github/cage/image/Painter.java
+@@ -0,0 +1,423 @@
++/*
++ * Copyright 2011 Király Attila
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *   http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++package com.github.cage.image;
++
++import java.awt.Color;
++import java.awt.Font;
++import java.awt.Graphics;
++import java.awt.Graphics2D;
++import java.awt.Rectangle;
++import java.awt.RenderingHints;
++import java.awt.font.GlyphVector;
++import java.awt.geom.AffineTransform;
++import java.awt.geom.Point2D;
++import java.awt.geom.Rectangle2D;
++import java.awt.image.BufferedImage;
++import java.awt.image.ConvolveOp;
++import java.awt.image.Kernel;
++import java.util.Random;
++
++/**
++ * This class does most of the captcha drawing. This class is thread safe.
++ * 
++ * @author akiraly
++ * 
++ */
++public class Painter {
++	/**
++	 * Enumeration for different image quality levels.
++	 */
++	public static enum Quality {
++		/**
++		 * Rendering hints should be set to minimum quality.
++		 */
++		MIN, /**
++		 * Rendering hints should be not set so they use the default.
++		 * quality
++		 */
++		DEFAULT, /**
++		 * Rendering hints should be set to maximum quality.
++		 */
++		MAX
++	}
++
++	/**
++	 * Default image width.
++	 */
++	public static final int DEFAULT_WIDTH = 200;
++
++	/**
++	 * Default image height.
++	 */
++	public static final int DEFAULT_HEIGHT = 70;
++
++	private final int width;
++	private final int height;
++	private final Color background;
++	private final Quality quality;
++	private final EffectConfig effectConfig;
++	private final Random rnd;
++
++	/**
++	 * Constructor.
++	 */
++	public Painter() {
++		this(DEFAULT_WIDTH, DEFAULT_HEIGHT, null, null, null, null);
++	}
++
++	/**
++	 * Constructor.
++	 * 
++	 * @param rnd
++	 *            random generator to be used, can be null
++	 */
++	public Painter(Random rnd) {
++		this(DEFAULT_WIDTH, DEFAULT_HEIGHT, null, null, null, rnd);
++	}
++
++	/**
++	 * Constructor.
++	 * 
++	 * @param width
++	 *            captcha image width, default {@link #DEFAULT_WIDTH}
++	 * @param height
++	 *            captcha image height, default {@link #DEFAULT_HEIGHT}
++	 * @param bGround
++	 *            background color of captcha image, default white, can be null
++	 * @param quality
++	 *            captcha image quality, default {@link Quality#MAX}, should use
++	 *            max it does not have measurable speed penalty on modern jvm-s
++	 *            (1.6u23), can be null
++	 * @param effectConfig
++	 *            used to define what effects should be used, can be null
++	 * @param rnd
++	 *            random generator to be used, can be null
++	 */
++	public Painter(int width, int height, Color bGround, Quality quality,
++			EffectConfig effectConfig, Random rnd) {
++		super();
++		this.width = width;
++		this.height = height;
++		this.background = bGround != null ? bGround : Color.WHITE;
++		this.quality = quality != null ? quality : Quality.MAX;
++		this.effectConfig = effectConfig != null ? effectConfig
++				: new EffectConfig();
++		this.rnd = rnd != null ? rnd : new Random();
++	}
++
++	/**
++	 * Generates a new captcha image.
++	 * 
++	 * @param font
++	 *            will be used for text, not null
++	 * @param fGround
++	 *            will be used for text, not null
++	 * @param text
++	 *            this will be rendered on the image, not null, not 0 length
++	 * @return the generated image
++	 */
++	public BufferedImage draw(Font font, Color fGround, String text) {
++		if (font == null) {
++			throw new IllegalArgumentException("Font can not be null.");
++		}
++		if (fGround == null) {
++			throw new IllegalArgumentException(
++					"Foreground color can not be null.");
++		}
++		if (text == null || text.length() < 1) {
++			throw new IllegalArgumentException("No text given.");
++		}
++
++		BufferedImage img = createImage();
++
++		Graphics g = img.getGraphics();
++		try {
++			Graphics2D g2 = configureGraphics(g, font, fGround);
++
++			draw(g2, text);
++		} finally {
++			g.dispose();
++		}
++
++		img = postProcess(img);
++
++		return img;
++	}
++
++	/**
++	 * Creates a new image to draw upon.
++	 * 
++	 * @return new image, not null
++	 */
++	protected BufferedImage createImage() {
++		return new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
++	}
++
++	/**
++	 * Configures graphics object before drawing text on it.
++	 * 
++	 * @param g
++	 *            to be configured must be an instance of {@link Graphics2D},
++	 *            not null
++	 * @param font
++	 *            to be used for the text, not null
++	 * @param fGround
++	 *            to be used for the text, not null
++	 * 
++	 * @return g casted to {@link Graphics2D} or throws exception if g is not
++	 *         instance of {@link Graphics2D}.
++	 */
++	protected Graphics2D configureGraphics(Graphics g, Font font, Color fGround) {
++		if (!(g instanceof Graphics2D)) {
++			throw new IllegalStateException("Graphics (" + g
++					+ ") that is not an instance of Graphics2D.");
++		}
++		Graphics2D g2 = (Graphics2D) g;
++
++		configureGraphicsQuality(g2);
++
++		g2.setColor(fGround);
++		g2.setBackground(background);
++		g2.setFont(font);
++
++		g2.clearRect(0, 0, width, height);
++
++		return g2;
++	}
++
++	/**
++	 * Sets quality related hints based on the quality field of this object.
++	 * 
++	 * @param g2
++	 *            to be configured, not null
++	 */
++	protected void configureGraphicsQuality(Graphics2D g2) {
++		if (quality == Quality.MAX) {
++			g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
++					RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
++			g2.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS,
++					RenderingHints.VALUE_FRACTIONALMETRICS_ON);
++			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
++					RenderingHints.VALUE_ANTIALIAS_ON);
++			g2.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING,
++					RenderingHints.VALUE_COLOR_RENDER_QUALITY);
++			g2.setRenderingHint(RenderingHints.KEY_DITHERING,
++					RenderingHints.VALUE_DITHER_ENABLE);
++			g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
++					RenderingHints.VALUE_INTERPOLATION_BICUBIC);
++			g2.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION,
++					RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
++			g2.setRenderingHint(RenderingHints.KEY_RENDERING,
++					RenderingHints.VALUE_RENDER_QUALITY);
++		} else if (quality == Quality.MIN) {
++			g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
++					RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
++			g2.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS,
++					RenderingHints.VALUE_FRACTIONALMETRICS_OFF);
++			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
++					RenderingHints.VALUE_ANTIALIAS_OFF);
++			g2.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING,
++					RenderingHints.VALUE_COLOR_RENDER_SPEED);
++			g2.setRenderingHint(RenderingHints.KEY_DITHERING,
++					RenderingHints.VALUE_DITHER_DISABLE);
++			g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
++					RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
++			g2.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION,
++					RenderingHints.VALUE_ALPHA_INTERPOLATION_SPEED);
++			g2.setRenderingHint(RenderingHints.KEY_RENDERING,
++					RenderingHints.VALUE_RENDER_SPEED);
++		}
++	}
++
++	/**
++	 * Does some of the text transformation (calls
++	 * {@link #transform(Graphics2D, String, GlyphVector)}), scales, transforms
++	 * and draws the result (also the outline if needed).
++	 * 
++	 * @param g
++	 *            to be drawn upon
++	 * @param text
++	 *            to be drawn
++	 */
++	protected void draw(Graphics2D g, String text) {
++		GlyphVector vector = g.getFont().createGlyphVector(
++				g.getFontRenderContext(), text);
++
++		transform(g, text, vector);
++
++		Rectangle bounds = vector.getPixelBounds(null, 0, height);
++		float bw = (float) bounds.getWidth();
++		float bh = (float) bounds.getHeight();
++
++		boolean outlineEnabled = effectConfig.isOutlineEnabled();
++
++		// transform + scale text to better fit the image
++		float wr = width / bw
++				* (rnd.nextFloat() / 20 + (outlineEnabled ? 0.89f : 0.92f))
++				* effectConfig.getScaleConfig().getX();
++		float hr = height / bh
++				* (rnd.nextFloat() / 20 + (outlineEnabled ? 0.68f : 0.75f))
++				* effectConfig.getScaleConfig().getY();
++		g.translate((width - bw * wr) / 2, (height - bh * hr) / 2);
++		g.scale(wr, hr);
++
++		float bx = (float) bounds.getX();
++		float by = (float) bounds.getY();
++		// draw outline if needed
++		if (outlineEnabled) {
++			g.draw(vector.getOutline(Math.signum(rnd.nextFloat() - 0.5f) * 1
++					* width / 200 - bx, Math.signum(rnd.nextFloat() - 0.5f) * 1
++					* height / 70 + height - by));
++		}
++		g.drawGlyphVector(vector, -bx, height - by);
++	}
++
++	/**
++	 * Does some of the text transformation (like rotation and symbol crowding).
++	 * 
++	 * @param g
++	 *            to be drawn upon
++	 * @param text
++	 *            to be drawn
++	 * @param v
++	 *            graphical representation of text, to be transformed
++	 */
++	protected void transform(Graphics2D g, String text, GlyphVector v) {
++		int glyphNum = v.getNumGlyphs();
++
++		Point2D prePos = null;
++		Rectangle2D preBounds = null;
++
++		double rotateCur = (rnd.nextDouble() - 0.5) * Math.PI / 8;
++		double rotateStep = Math.signum(rotateCur)
++				* (rnd.nextDouble() * 3 * Math.PI / 8 / glyphNum);
++		boolean rotateEnabled = effectConfig.isRotateEnabled();
++
++		for (int fi = 0; fi < glyphNum; fi++) {
++			if (rotateEnabled) {
++				AffineTransform tr = AffineTransform
++						.getRotateInstance(rotateCur);
++				if (rnd.nextDouble() < 0.25) {
++					rotateStep *= -1;
++				}
++				rotateCur += rotateStep;
++				v.setGlyphTransform(fi, tr);
++			}
++			Point2D pos = v.getGlyphPosition(fi);
++			Rectangle2D bounds = v.getGlyphVisualBounds(fi).getBounds2D();
++			Point2D newPos;
++			if (prePos == null) {
++				newPos = new Point2D.Double(pos.getX() - bounds.getX(),
++						pos.getY());
++			} else {
++				newPos = new Point2D.Double(
++						preBounds.getMaxX()
++								+ pos.getX()
++								- bounds.getX()
++								- Math.min(preBounds.getWidth(),
++										bounds.getWidth())
++								* (rnd.nextDouble() / 20 + (rotateEnabled ? 0.27
++										: 0.1)), pos.getY());
++			}
++			v.setGlyphPosition(fi, newPos);
++			prePos = newPos;
++			preBounds = v.getGlyphVisualBounds(fi).getBounds2D();
++		}
++	}
++
++	/**
++	 * Does some post processing on the generated image if needed. Like rippling
++	 * (waving) and blurring.
++	 * 
++	 * @param img
++	 *            to be post prosessed.
++	 * @return the finished image, maybe the same as the input
++	 */
++	protected BufferedImage postProcess(BufferedImage img) {
++		if (effectConfig.isRippleEnabled()) {
++			Rippler.AxisConfig vertical = new Rippler.AxisConfig(
++					rnd.nextDouble() * 2 * Math.PI, (1 + rnd.nextDouble() * 2)
++							* Math.PI, img.getHeight() / 10.0);
++			Rippler.AxisConfig horizontal = new Rippler.AxisConfig(
++					rnd.nextDouble() * 2 * Math.PI, (2 + rnd.nextDouble() * 2)
++							* Math.PI, img.getWidth() / 100.0);
++			Rippler op = new Rippler(vertical, horizontal);
++
++			img = op.filter(img, createImage());
++		}
++		if (effectConfig.isBlurEnabled()) {
++			float[] blurArray = new float[9];
++			fillBlurArray(blurArray);
++			ConvolveOp op = new ConvolveOp(new Kernel(3, 3, blurArray),
++					ConvolveOp.EDGE_NO_OP, null);
++
++			img = op.filter(img, createImage());
++		}
++		return img;
++	}
++
++	/**
++	 * Generates a random probability distribution. Used by blurring.
++	 * 
++	 * @param array
++	 *            filled with random values. The values in array sum up to 1.
++	 */
++	protected void fillBlurArray(float[] array) {
++		float sum = 0;
++		for (int fi = 0; fi < array.length; fi++) {
++			array[fi] = rnd.nextFloat();
++			sum += array[fi];
++		}
++		for (int fi = 0; fi < array.length; fi++) {
++			array[fi] /= sum;
++		}
++	}
++
++	/**
++	 * @return width of the image
++	 */
++	public int getWidth() {
++		return width;
++	}
++
++	/**
++	 * @return height of the image
++	 */
++	public int getHeight() {
++		return height;
++	}
++
++	/**
++	 * @return background color of the image, not null
++	 */
++	public Color getBackground() {
++		return background;
++	}
++
++	/**
++	 * @return quality level of the image, not null
++	 */
++	public Quality getQuality() {
++		return quality;
++	}
++
++	/**
++	 * @return configuration for effects, not null
++	 */
++	public EffectConfig getEffectConfig() {
++		return effectConfig;
++	}
++}
+diff --git a/proxy/src/main/java/com/github/cage/image/RgbColorGenerator.java b/proxy/src/main/java/com/github/cage/image/RgbColorGenerator.java
+new file mode 100644
+index 0000000..37b39e7
+--- /dev/null
++++ b/proxy/src/main/java/com/github/cage/image/RgbColorGenerator.java
+@@ -0,0 +1,59 @@
++/*
++ * Copyright 2011 Király Attila
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *   http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++package com.github.cage.image;
++
++import java.awt.Color;
++import java.util.Random;
++
++import com.github.cage.IGenerator;
++
++/**
++ * Random RGB {@link Color} object generator. The returned {@link Color}-s are
++ * not too bright so they look good on white background. This class is thread
++ * safe.
++ * 
++ * @author akiraly
++ */
++public class RgbColorGenerator implements IGenerator<Color> {
++	private final Random rnd;
++
++	/**
++	 * Constructor.
++	 * 
++	 * @param rnd
++	 *            random generator to be used, can be null
++	 */
++	public RgbColorGenerator(Random rnd) {
++		this.rnd = rnd != null ? rnd : new Random();
++	}
++
++	public Color next() {
++		int[] c = new int[3];
++
++		int i = rnd.nextInt(c.length);
++
++		for (int fi = 0; fi < c.length; fi++) {
++			if (fi == i) {
++				c[fi] = rnd.nextInt(71);
++			} else {
++				c[fi] = rnd.nextInt(256);
++			}
++		}
++
++		return new Color(c[0], c[1], c[2]);
++	}
++
++}
+diff --git a/proxy/src/main/java/com/github/cage/image/Rippler.java b/proxy/src/main/java/com/github/cage/image/Rippler.java
+new file mode 100644
+index 0000000..0f9d03f
+--- /dev/null
++++ b/proxy/src/main/java/com/github/cage/image/Rippler.java
+@@ -0,0 +1,182 @@
++/*
++ * Copyright 2011 Király Attila
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *   http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++package com.github.cage.image;
++
++import java.awt.image.BufferedImage;
++
++/**
++ * A filter to generate ripple (wave) effected images. Uses a transformed sinus
++ * wave for this. This class is thread safe.
++ * 
++ * @author akiraly
++ * 
++ */
++public class Rippler {
++	/**
++	 * Class to respresent wave tranforming information for an axis.
++	 */
++	public static class AxisConfig {
++		private final double start;
++
++		private final double length;
++
++		private final double amplitude;
++
++		/**
++		 * Constructor.
++		 * 
++		 * @param start
++		 *            the starting x offset to generate wave values. Should be
++		 *            between 0 and 2 * {@link Math#PI}.
++		 * @param length
++		 *            the length of x to be used to generate wave values. Should
++		 *            be between 0 and 4 * {@link Math#PI}.
++		 * @param amplitude
++		 *            the maximum y value, if it is too big, some important
++		 *            parts of the image (like the text) can "wave" out on the
++		 *            top or on the bottom of the image.
++		 */
++		public AxisConfig(double start, double length, double amplitude) {
++			this.start = normalize(start, 2);
++			this.length = normalize(length, 4);
++			this.amplitude = amplitude;
++		}
++
++		/**
++		 * Normalizes parameter to fall into [0, multi * {@link Math#PI}].
++		 * 
++		 * @param a
++		 *            to be normalized
++		 * @param multi
++		 *            multiplicator used for end value
++		 * @return normalized value
++		 */
++		protected double normalize(double a, int multi) {
++			double piMulti = multi * Math.PI;
++
++			a = Math.abs(a);
++			double d = Math.floor(a / piMulti);
++
++			return a - d * piMulti;
++		}
++
++		/**
++		 * @return wave part start value
++		 */
++		public double getStart() {
++			return start;
++		}
++
++		/**
++		 * @return wave part length
++		 */
++		public double getLength() {
++			return length;
++		}
++
++		/**
++		 * @return amplitude used to transform the wave part
++		 */
++		public double getAmplitude() {
++			return amplitude;
++		}
++	}
++
++	private final AxisConfig vertical;
++
++	private final AxisConfig horizontal;
++
++	/**
++	 * Constructor.
++	 * 
++	 * @param vertical
++	 *            config to calculate waving deltas from x axis (so to modify y
++	 *            values), not null
++	 * @param horizontal
++	 *            config to calculate waving deltas from y axis (so to modify x
++	 *            values), not null
++	 */
++	public Rippler(AxisConfig vertical, AxisConfig horizontal) {
++		this.vertical = vertical;
++		this.horizontal = horizontal;
++	}
++
++	/**
++	 * Draws a rippled (waved) variant of source into destination.
++	 * 
++	 * @param src
++	 *            to be transformed, not null
++	 * @param dest
++	 *            to hold the result, not null
++	 * @return dest is returned
++	 */
++	public BufferedImage filter(BufferedImage src, BufferedImage dest) {
++		int width = src.getWidth();
++		int height = src.getHeight();
++
++		int[] verticalDelta = calcDeltaArray(vertical, width);
++
++		int[] horizontalDelta = calcDeltaArray(horizontal, height);
++
++		for (int x = 0; x < width; x++) {
++			for (int y = 0; y < height; y++) {
++				int ny = (y + verticalDelta[x] + height) % height;
++				int nx = (x + horizontalDelta[ny] + width) % width;
++				dest.setRGB(nx, ny, src.getRGB(x, y));
++			}
++		}
++
++		return dest;
++	}
++
++	/**
++	 * Calculates wave delta array.
++	 * 
++	 * @param axisConfig
++	 *            config object to transform the wave, not null
++	 * @param num
++	 *            number of points needed, positive
++	 * @return the calculated num length delta array
++	 */
++	protected int[] calcDeltaArray(AxisConfig axisConfig, int num) {
++		int[] delta = new int[num];
++
++		double start = axisConfig.getStart();
++		double period = axisConfig.getLength() / num;
++		double amplitude = axisConfig.getAmplitude();
++
++		for (int fi = 0; fi < num; fi++) {
++			delta[fi] = (int) Math.round(amplitude
++					* Math.sin(start + fi * period));
++		}
++
++		return delta;
++	}
++
++	/**
++	 * @return vertical config, not null
++	 */
++	public AxisConfig getVertical() {
++		return vertical;
++	}
++
++	/**
++	 * @return horizontal config, not null
++	 */
++	public AxisConfig getHorizontal() {
++		return horizontal;
++	}
++}
+diff --git a/proxy/src/main/java/com/github/cage/image/ScaleConfig.java b/proxy/src/main/java/com/github/cage/image/ScaleConfig.java
+new file mode 100644
+index 0000000..fb11551
+--- /dev/null
++++ b/proxy/src/main/java/com/github/cage/image/ScaleConfig.java
+@@ -0,0 +1,65 @@
++/*
++ * Copyright 2011 Király Attila
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *   http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++package com.github.cage.image;
++
++/**
++ * Used by {@link EffectConfig} to hold the scaling scalars for the captcha
++ * image.
++ * 
++ * @author akiraly
++ * 
++ */
++public class ScaleConfig {
++	private final float x;
++	private final float y;
++
++	/**
++	 * Constructor.
++	 */
++	public ScaleConfig() {
++		this(1, 1);
++	}
++
++	/**
++	 * Constructor.
++	 * 
++	 * @param x
++	 *            a value in [0f, 1f]. 1 means the captcha will fill the whole
++	 *            width of the picture.
++	 * @param y
++	 *            a value in [0f, 1f]. 1 means the captcha will fill the whole
++	 *            height of the picture.
++	 */
++	public ScaleConfig(float x, float y) {
++		super();
++		this.x = Math.min(Math.abs(x), 1);
++		this.y = Math.min(Math.abs(y), 1);
++	}
++
++	/**
++	 * @return scale by the x axis
++	 */
++	public float getX() {
++		return x;
++	}
++
++	/**
++	 * @return scale by the y axis
++	 */
++	public float getY() {
++		return y;
++	}
++}
+diff --git a/proxy/src/main/java/com/github/cage/image/package-info.java b/proxy/src/main/java/com/github/cage/image/package-info.java
+new file mode 100644
+index 0000000..37fcb2c
+--- /dev/null
++++ b/proxy/src/main/java/com/github/cage/image/package-info.java
+@@ -0,0 +1,21 @@
++/*
++ * Copyright 2011 Király Attila
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *   http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++/**
++ * Classes in this package are responsible for the actual image generation, the
++ * central class is {@link com.github.cage.image.Painter}.
++ */
++package com.github.cage.image;
++
+diff --git a/proxy/src/main/java/com/github/cage/package-info.java b/proxy/src/main/java/com/github/cage/package-info.java
+new file mode 100644
+index 0000000..2fb68a1
+--- /dev/null
++++ b/proxy/src/main/java/com/github/cage/package-info.java
+@@ -0,0 +1,22 @@
++/*
++ * Copyright 2011 Király Attila
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *   http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++/**
++ * This is the main package of Cage, for usage example see
++ * {@link com.github.cage.Cage} or one of the predefined templates like
++ * {@link com.github.cage.GCage} or {@link com.github.cage.YCage}.
++ */
++package com.github.cage;
++
+diff --git a/proxy/src/main/java/com/github/cage/token/RandomCharacterGeneratorFactory.java b/proxy/src/main/java/com/github/cage/token/RandomCharacterGeneratorFactory.java
+new file mode 100644
+index 0000000..4b61c64
+--- /dev/null
++++ b/proxy/src/main/java/com/github/cage/token/RandomCharacterGeneratorFactory.java
+@@ -0,0 +1,199 @@
++/*
++ * Copyright 2011 Király Attila
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *   http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++package com.github.cage.token;
++
++import java.util.Collections;
++import java.util.HashMap;
++import java.util.Map;
++import java.util.Random;
++
++import com.github.cage.IGenerator;
++import com.github.cage.IGeneratorFactory;
++
++/**
++ * Factory that can generate {@link Character} generating {@link IGenerator}s.
++ * 
++ * @author akiraly
++ */
++public class RandomCharacterGeneratorFactory implements
++		IGeneratorFactory<Character> {
++	/**
++	 * English lower cased vowel character array.
++	 */
++	public static final char[] ENGLISH_VOWELS = "aeiou".toCharArray();
++
++	/**
++	 * English lower cased consonant character array.
++	 */
++	public static final char[] ENGLISH_CONSONANTS = "bcdfghjklmnpqrstxyvz"
++			.toCharArray();
++
++	/**
++	 * Arabic numeral character array.
++	 */
++	public static final char[] ARABIC_NUMERALS = "0123456789".toCharArray();
++
++	/**
++	 * Default character set for the default case. It contains the English lower
++	 * cased letters.
++	 */
++	public static final char[] DEFAULT_DEFAULT_CHARACTER_SET = (new String(
++			ENGLISH_VOWELS) + new String(ENGLISH_CONSONANTS)).toCharArray();
++
++	/**
++	 * Special character sets for the default case.
++	 */
++	public static final Map<Character, char[]> DEFAULT_SPECIAL_CHARACTER_SETS = Collections
++			.unmodifiableMap(createDefaultSpecialCharacterSets());
++
++	private final char[] defaultCharacterSet;
++
++	private final Map<Character, char[]> specialCharacterSets;
++
++	private final Random rnd;
++
++	/**
++	 * Generates characters based on the settings of the factory. This is
++	 * <b>not</b> thread safe!
++	 */
++	public class RandomCharacterGenerator implements IGenerator<Character> {
++		private char[] currentCharacterSet = defaultCharacterSet;
++
++		public Character next() {
++			char next = currentCharacterSet[rnd
++					.nextInt(currentCharacterSet.length)];
++
++			if (specialCharacterSets != null) {
++				char[] nextCharacterSet = specialCharacterSets.get(next);
++				if (nextCharacterSet != null) {
++					if (nextCharacterSet.length < 1) {
++						throw new IllegalStateException(
++								"specialCharacterSets should not hold an empty char[] value");
++					}
++					currentCharacterSet = nextCharacterSet;
++				} else {
++					currentCharacterSet = defaultCharacterSet;
++				}
++			}
++
++			return next;
++		}
++	}
++
++	/**
++	 * Constructor.
++	 */
++	public RandomCharacterGeneratorFactory() {
++		this(null);
++	}
++
++	/**
++	 * Constructor.
++	 * 
++	 * @param rnd
++	 *            used to generate random numbers. Can be null.
++	 */
++	public RandomCharacterGeneratorFactory(Random rnd) {
++		this(null, DEFAULT_SPECIAL_CHARACTER_SETS, rnd);
++	}
++
++	/**
++	 * Constructor.
++	 * 
++	 * @param defaultCharacterSet
++	 *            used generally for character choosing, can be null.
++	 * @param specialCharacterSets
++	 *            map contains special cases. A (k, v) pair in this map means
++	 *            that character k can only be immediately followed by a
++	 *            character in v array. No value should be empty or null. The
++	 *            map parameter itself can be null.
++	 * @param rnd
++	 *            used to generate random numbers. Can be null.
++	 */
++	public RandomCharacterGeneratorFactory(char[] defaultCharacterSet,
++			Map<Character, char[]> specialCharacterSets, Random rnd) {
++		this.defaultCharacterSet = defaultCharacterSet != null
++				&& defaultCharacterSet.length > 0 ? defaultCharacterSet
++				: DEFAULT_DEFAULT_CHARACTER_SET;
++		this.specialCharacterSets = specialCharacterSets != null
++				&& !specialCharacterSets.isEmpty() ? specialCharacterSets
++				: null;
++		this.rnd = rnd != null ? rnd : new Random();
++	}
++
++	/**
++	 * Helper function to build {@link #DEFAULT_SPECIAL_CHARACTER_SETS}. It
++	 * contains some rules to avoid confusing character pairs. Also makes sure
++	 * that vowels and consonants follow each other in an alternating fashion.
++	 * 
++	 * @return populated map
++	 */
++	protected static Map<Character, char[]> createDefaultSpecialCharacterSets() {
++		Map<Character, char[]> m = new HashMap<Character, char[]>();
++
++		char[] con = ENGLISH_CONSONANTS;
++		String conS = new String(con);
++		char[] vow = ENGLISH_VOWELS;
++		String vowS = new String(vow);
++
++		m.put('a', con);
++		m.put('b', vow);
++		m.put('c', vowS.replaceAll("o", "").toCharArray());
++		m.put('d', vowS.replaceAll("o", "").toCharArray());
++		m.put('e', con);
++		m.put('f', vow);
++		m.put('g', vow);
++		m.put('h', vow);
++		m.put('i', conS.replaceAll("j|l", "").toCharArray());
++		m.put('j', vowS.replaceAll("i", "").toCharArray());
++		m.put('k', vow);
++		m.put('l', vowS.replaceAll("i|o", "").toCharArray());
++		m.put('m', vow);
++		m.put('n', vowS.replaceAll("u", "").toCharArray());
++		m.put('o', conS.replaceAll("b|l|p", "").toCharArray());
++		m.put('p', vow);
++		m.put('q', vowS.replaceAll("o", "").toCharArray());
++		m.put('r', vowS.replaceAll("u", "").toCharArray());
++		m.put('s', vow);
++		m.put('t', vow);
++		m.put('u', con);
++		m.put('v', vow);
++		m.put('w', vow);
++		m.put('x', vow);
++		m.put('y', vow);
++		m.put('z', vow);
++
++		return m;
++	}
++
++	public IGenerator<Character> next() {
++		return new RandomCharacterGenerator();
++	}
++
++	/**
++	 * @return default character set for character generation, not null
++	 */
++	public char[] getDefaultCharacterSet() {
++		return defaultCharacterSet;
++	}
++
++	/**
++	 * @return map holding the special rules for each character, can be null
++	 */
++	public Map<Character, char[]> getSpecialCharacterSets() {
++		return specialCharacterSets;
++	}
++}
+diff --git a/proxy/src/main/java/com/github/cage/token/RandomTokenGenerator.java b/proxy/src/main/java/com/github/cage/token/RandomTokenGenerator.java
+new file mode 100644
+index 0000000..5c9491a
+--- /dev/null
++++ b/proxy/src/main/java/com/github/cage/token/RandomTokenGenerator.java
+@@ -0,0 +1,151 @@
++/*
++ * Copyright 2011 Király Attila
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *   http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++package com.github.cage.token;
++
++import java.util.Random;
++
++import com.github.cage.IGenerator;
++import com.github.cage.IGeneratorFactory;
++
++/**
++ * A simple random String generator that can be used to generate tokens for the
++ * captcha images.
++ * 
++ * In its default mode instances of this class generate words from English lower
++ * cased letters where vowels and consonants are alternating.
++ * 
++ * @author akiraly
++ */
++public class RandomTokenGenerator implements IGenerator<String> {
++
++	/**
++	 * Default minimum length of token.
++	 */
++	protected static final int DEFAULT_TOKEN_LEN_MIN = 8;
++
++	/**
++	 * Default maximum length of token is {@link #DEFAULT_TOKEN_LEN_MIN} +
++	 * {@value #DEFAULT_TOKEN_LEN_DELTA}.
++	 */
++	protected static final int DEFAULT_TOKEN_LEN_DELTA = 2;
++
++	private final IGeneratorFactory<Character> characterGeneratorFactory;
++	private final int minLength;
++	private final int delta;
++	private final Random rnd;
++
++	/**
++	 * Constructor.
++	 */
++	public RandomTokenGenerator() {
++		this(null);
++	}
++
++	/**
++	 * Constructor.
++	 * 
++	 * @param rnd
++	 *            random generator to be used, can be null
++	 */
++	public RandomTokenGenerator(Random rnd) {
++		this(rnd, DEFAULT_TOKEN_LEN_MIN, DEFAULT_TOKEN_LEN_DELTA);
++	}
++
++	/**
++	 * Constructor.
++	 * 
++	 * @param length
++	 *            the length of the generated words, must be > 0
++	 * @param rnd
++	 *            random generator to be used, can be null
++	 */
++	public RandomTokenGenerator(Random rnd, int length) {
++		this(rnd, length, 0);
++	}
++
++	/**
++	 * Constructor.
++	 * 
++	 * @param rnd
++	 *            random generator to be used, can be null
++	 * @param minLength
++	 *            the minimum length of the generated words, must be > 0
++	 * @param delta
++	 *            minLength + delta is the maximum length of the generated
++	 *            words, delta must be >= 0
++	 */
++	public RandomTokenGenerator(Random rnd, int minLength, int delta) {
++		this(rnd, new RandomCharacterGeneratorFactory(rnd != null ? rnd
++				: new Random()), minLength, delta);
++	}
++
++	/**
++	 * Constructor.
++	 * 
++	 * @param rnd
++	 *            random generator to be used, can be null
++	 * @param characterGeneratorFactory
++	 *            character generator factory to be used for the actual
++	 *            character creation, can be null
++	 * @param minLength
++	 *            the minimum length of the generated words, must be > 0
++	 * @param delta
++	 *            minLength + delta is the maximum length of the generated
++	 *            words, delta must be >= 0
++	 */
++	public RandomTokenGenerator(Random rnd,
++			IGeneratorFactory<Character> characterGeneratorFactory,
++			int minLength, int delta) {
++		this.characterGeneratorFactory = characterGeneratorFactory != null ? characterGeneratorFactory
++				: new RandomCharacterGeneratorFactory();
++		this.minLength = Math.abs(minLength);
++		this.delta = Math.abs(delta);
++		this.rnd = rnd != null ? rnd : new Random();
++	}
++
++	public String next() {
++		int length = (delta <= 1 ? 0 : rnd.nextInt(delta) + 1) + minLength;
++		char[] word = new char[length];
++		IGenerator<Character> generator = characterGeneratorFactory.next();
++
++		for (int fi = 0; fi < word.length; fi++) {
++			word[fi] = generator.next();
++		}
++
++		return new String(word);
++	}
++
++	/**
++	 * @return character generator factory used by this class, not null
++	 */
++	public IGeneratorFactory<Character> getCharacterGeneratorFactory() {
++		return characterGeneratorFactory;
++	}
++
++	/**
++	 * @return minimum length of generated tokens
++	 */
++	public int getMinLength() {
++		return minLength;
++	}
++
++	/**
++	 * @return maximum length difference to add to the minimum length
++	 */
++	public int getDelta() {
++		return delta;
++	}
++}
+diff --git a/proxy/src/main/java/com/github/cage/token/package-info.java b/proxy/src/main/java/com/github/cage/token/package-info.java
+new file mode 100644
+index 0000000..4310422
+--- /dev/null
++++ b/proxy/src/main/java/com/github/cage/token/package-info.java
+@@ -0,0 +1,21 @@
++/*
++ * Copyright 2011 Király Attila
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *   http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++/**
++ * Classes in this package are responsible for token generation, the
++ * central class is {@link com.github.cage.token.RandomTokenGenerator}.
++ */
++package com.github.cage.token;
++
+diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+index 4a33b9d..4fc341f 100644
+--- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
++++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+@@ -89,6 +89,7 @@ import net.md_5.bungee.query.RemoteQuery;
+ import net.md_5.bungee.scheduler.BungeeScheduler;
+ import net.md_5.bungee.util.CaseInsensitiveMap;
+ import org.fusesource.jansi.AnsiConsole;
++import ru.yooxa.bungee.connection.CaptchaBridge;
+ 
+ /**
+  * Main BungeeCord proxy class.
+@@ -123,10 +124,10 @@ public class BungeeCord extends ProxyServer
+     /**
+      * Fully qualified connections.
+      */
+-    private final Map<String, UserConnection> connections = new CaseInsensitiveMap<>();
++    public final Map<String, UserConnection> connections = new CaseInsensitiveMap<>();
+     // Used to help with packet rewriting
+-    private final Map<UUID, UserConnection> connectionsByOfflineUUID = new HashMap<>();
+-    private final ReadWriteLock connectionLock = new ReentrantReadWriteLock();
++    public final Map<UUID, UserConnection> connectionsByOfflineUUID = new HashMap<>();
++    public final ReadWriteLock connectionLock = new ReentrantReadWriteLock();
+     /**
+      * Plugin manager.
+      */
+@@ -276,6 +277,13 @@ public class BungeeCord extends ProxyServer
+         {
+             connectionThrottle = new ConnectionThrottle( config.getThrottle() );
+         }
++        try {
++            CaptchaBridge.init();
++        } catch (Exception exception) {
++            System.out.println("Ошибка инициализации #0, сообщите разработчику - vk.com/yooxa");
++            System.exit(0);
++            return;
++        }
+         startListeners();
+ 
+         saveThread.scheduleAtFixedRate( new TimerTask()
+diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
+index 5d72a56..c98d11c 100644
+--- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
++++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
+@@ -216,8 +216,8 @@ public class ServerConnector extends PacketHandler
+             user.getForgeClientHandler().setHandshakeComplete();
+         }
+ 
+-        if ( user.getServer() == null )
+-        {
++        if (!user.serverr) {
++            user.serverr = true;
+             // Once again, first connection
+             user.setClientEntityId( login.getEntityId() );
+             user.setServerEntityId( login.getEntityId() );
+@@ -236,7 +236,9 @@ public class ServerConnector extends PacketHandler
+             user.setDimension( login.getDimension() );
+         } else
+         {
+-            user.getServer().setObsolete( true );
++            if (user.getServer() != null) {
++                user.getServer().setObsolete(true);
++            }
+             user.getTabListHandler().onServerChange();
+ 
+             Scoreboard serverScoreboard = user.getServerSentScoreboard();
+diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
+index 9cc7f3f..d02274e 100644
+--- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
++++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
+@@ -68,6 +68,7 @@ public final class UserConnection implements ProxiedPlayer
+ {
+ 
+     /*========================================================================*/
++    public boolean serverr = false;
+     @NonNull
+     private final ProxyServer bungee;
+     @NonNull
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+index 88bc825..9d4cc6d 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+@@ -62,7 +62,8 @@ import net.md_5.bungee.protocol.packet.PluginMessage;
+ import net.md_5.bungee.protocol.packet.StatusRequest;
+ import net.md_5.bungee.protocol.packet.StatusResponse;
+ import net.md_5.bungee.util.BoundedArrayList;
+-
++import ru.yooxa.bungee.connection.CaptchaBridge;
++import ru.yooxa.database.SqlStorage;
+ @RequiredArgsConstructor
+ public class InitialHandler extends PacketHandler implements PendingConnection
+ {
+@@ -510,7 +511,12 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+ 
+                             ch.getHandle().pipeline().get( HandlerBoss.class ).setHandler( new UpstreamBridge( bungee, userCon ) );
+                             bungee.getPluginManager().callEvent( new PostLoginEvent( userCon ) );
++                            boolean captcha = !SqlStorage.isWhite(InitialHandler.this.getAddress().getAddress().getHostAddress());
++                            if (captcha) {
++                                ((HandlerBoss) InitialHandler.this.ch.getHandle().pipeline().get(HandlerBoss.class)).setHandler(new CaptchaBridge(userCon));
++                             } else {
+                             ServerInfo server;
++                            
+                             if ( bungee.getReconnectHandler() != null )
+                             {
+                                 server = bungee.getReconnectHandler().getServer( userCon );
+@@ -524,7 +530,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+                             }
+ 
+                             userCon.connect( server, null, true );
+-
++                             }
+                             thisState = State.FINISHED;
+                         }
+                     }
+diff --git a/proxy/src/main/java/org/bukkit/map/CraftMapCanvas.java b/proxy/src/main/java/org/bukkit/map/CraftMapCanvas.java
+new file mode 100644
+index 0000000..019c9e2
+--- /dev/null
++++ b/proxy/src/main/java/org/bukkit/map/CraftMapCanvas.java
+@@ -0,0 +1,113 @@
++package org.bukkit.map;
++
++import java.awt.Image;
++import java.awt.image.ImageObserver;
++import java.util.Arrays;
++import net.md_5.bungee.protocol.packet.extra.MapDataPacket;
++
++public class CraftMapCanvas {
++
++    private final byte[] buffer = new byte[16384];
++
++    public CraftMapCanvas() {
++        Arrays.fill(this.buffer, (byte) -1);
++    }
++
++    public void setPixel(int x, int y, byte color) {
++        if (x >= 0 && y >= 0 && x < 128 && y < 128) {
++            if (this.buffer[y * 128 + x] != color) {
++                this.buffer[y * 128 + x] = color;
++            }
++
++        }
++    }
++
++    protected byte[] getBuffer() {
++        return this.buffer;
++    }
++
++    public void drawImage(int x, int y, Image image) {
++        byte[] bytes = MapPalette.imageToBytes(image);
++
++        for (int x2 = 0; x2 < image.getWidth((ImageObserver) null); ++x2) {
++            for (int y2 = 0; y2 < image.getHeight((ImageObserver) null); ++y2) {
++                this.setPixel(x + x2, y + y2, bytes[y2 * image.getWidth((ImageObserver) null) + x2]);
++            }
++        }
++
++    }
++
++    public void drawText(int x, int y, MapFont font, String text) {
++        int xStart = x;
++        byte color = 44;
++
++        if (!font.isValid(text)) {
++            throw new IllegalArgumentException("text contains invalid characters");
++        } else {
++            for (int i = 0; i < text.length(); ++i) {
++                char ch = text.charAt(i);
++
++                if (ch == 10) {
++                    x = xStart;
++                    y += font.getHeight() + 1;
++                } else {
++                    if (ch == 167) {
++                        int sprite = text.indexOf(59, i);
++
++                        if (sprite >= 0) {
++                            try {
++                                color = Byte.parseByte(text.substring(i + 1, sprite));
++                                i = sprite;
++                                continue;
++                            } catch (NumberFormatException numberformatexception) {
++                                ;
++                            }
++                        }
++                    }
++
++                    MapFont.CharacterSprite mapfont_charactersprite = font.getChar(text.charAt(i));
++
++                    for (int r = 0; r < font.getHeight(); ++r) {
++                        for (int c = 0; c < mapfont_charactersprite.getWidth(); ++c) {
++                            if (mapfont_charactersprite.get(r, c)) {
++                                this.setPixel(x + c, y + r, color);
++                            }
++                        }
++                    }
++
++                    x += mapfont_charactersprite.getWidth() + 1;
++                }
++            }
++
++        }
++    }
++
++    public MapDataPacket.MapDataNew getMapData() {
++        byte[] buffer = new byte[16384];
++        byte[] buf = this.getBuffer();
++
++        for (int i = 0; i < buf.length; ++i) {
++            byte color = buf[i];
++
++            if (color >= 0 || color <= -113) {
++                buffer[i] = color;
++            }
++        }
++
++        return new MapDataPacket.MapDataNew(128, 128, 0, 0, buffer);
++    }
++
++    private byte getColor(int x, int y) {
++        return x >= 0 && y >= 0 && x < 128 && y < 128 ? this.buffer[y * 128 + x] : 0;
++    }
++
++    public MapDataPacket.MapData getOldData(int a) {
++        byte[] colors = new byte[128];
++
++        for (int i = 0; i < 128; ++i) {
++            colors[i] = this.getColor(a, i);
++        }
++
++        return new MapDataPacket.MapColumnUpdate(a, 0, 128, colors);
++    }
++}
+diff --git a/proxy/src/main/java/org/bukkit/map/MapFont.java b/proxy/src/main/java/org/bukkit/map/MapFont.java
+new file mode 100644
+index 0000000..4746477
+--- /dev/null
++++ b/proxy/src/main/java/org/bukkit/map/MapFont.java
+@@ -0,0 +1,87 @@
++package org.bukkit.map;
++
++import java.util.HashMap;
++
++public class MapFont {
++
++    private final HashMap chars = new HashMap();
++    private int height = 0;
++    protected boolean malleable = true;
++
++    public void setChar(char ch, MapFont.CharacterSprite sprite) {
++        if (!this.malleable) {
++            throw new IllegalStateException("this font is not malleable");
++        } else {
++            this.chars.put(Character.valueOf(ch), sprite);
++            if (sprite.getHeight() > this.height) {
++                this.height = sprite.getHeight();
++            }
++
++        }
++    }
++
++    public MapFont.CharacterSprite getChar(char ch) {
++        return (MapFont.CharacterSprite) this.chars.get(Character.valueOf(ch));
++    }
++
++    public int getWidth(String text) {
++        if (!this.isValid(text)) {
++            throw new IllegalArgumentException("text contains invalid characters");
++        } else if (text.length() == 0) {
++            return 0;
++        } else {
++            int result = 0;
++
++            for (int i = 0; i < text.length(); ++i) {
++                result += ((MapFont.CharacterSprite) this.chars.get(Character.valueOf(text.charAt(i)))).getWidth();
++            }
++
++            result += text.length() - 1;
++            return result;
++        }
++    }
++
++    public int getHeight() {
++        return this.height;
++    }
++
++    public boolean isValid(String text) {
++        for (int i = 0; i < text.length(); ++i) {
++            char ch = text.charAt(i);
++
++            if (ch != 167 && ch != 10 && this.chars.get(Character.valueOf(ch)) == null) {
++                return false;
++            }
++        }
++
++        return true;
++    }
++
++    public static class CharacterSprite {
++
++        private final int width;
++        private final int height;
++        private final boolean[] data;
++
++        public CharacterSprite(int width, int height, boolean[] data) {
++            this.width = width;
++            this.height = height;
++            this.data = data;
++            if (data.length != width * height) {
++                throw new IllegalArgumentException("size of data does not match dimensions");
++            }
++        }
++
++        public boolean get(int row, int col) {
++            return row >= 0 && col >= 0 && row < this.height && col < this.width ? this.data[row * this.width + col] : false;
++        }
++
++        public int getWidth() {
++            return this.width;
++        }
++
++        public int getHeight() {
++            return this.height;
++        }
++    }
++}
+diff --git a/proxy/src/main/java/org/bukkit/map/MapPalette.java b/proxy/src/main/java/org/bukkit/map/MapPalette.java
+new file mode 100644
+index 0000000..3abc17f
+--- /dev/null
++++ b/proxy/src/main/java/org/bukkit/map/MapPalette.java
+@@ -0,0 +1,137 @@
++package org.bukkit.map;
++
++import java.awt.Color;
++import java.awt.Graphics2D;
++import java.awt.Image;
++import java.awt.image.BufferedImage;
++import java.awt.image.ImageObserver;
++
++public final class MapPalette {
++
++    private static final Color[] colors = new Color[] { new Color(0, 0, 0, 0), new Color(0, 0, 0, 0), new Color(0, 0, 0, 0), new Color(0, 0, 0, 0), c(89, 125, 39), c(109, 153, 48), c(127, 178, 56), c(67, 94, 29), c(174, 164, 115), c(213, 201, 140), c(247, 233, 163), c(130, 123, 86), c(117, 117, 117), c(144, 144, 144), c(167, 167, 167), c(88, 88, 88), c(180, 0, 0), c(220, 0, 0), c(255, 0, 0), c(135, 0, 0), c(112, 112, 180), c(138, 138, 220), c(160, 160, 255), c(84, 84, 135), c(117, 117, 117), c(144, 144, 144), c(167, 167, 167), c(88, 88, 88), c(0, 87, 0), c(0, 106, 0), c(0, 124, 0), c(0, 65, 0), c(180, 180, 180), c(220, 220, 220), c(255, 255, 255), c(135, 135, 135), c(115, 118, 129), c(141, 144, 158), c(164, 168, 184), c(86, 88, 97), c(129, 74, 33), c(157, 91, 40), c(183, 106, 47), c(96, 56, 24), c(79, 79, 79), c(96, 96, 96), c(112, 112, 112), c(59, 59, 59), c(45, 45, 180), c(55, 55, 220), c(64, 64, 255), c(33, 33, 135), c(73, 58, 35), c(89, 71, 43), c(104, 83, 50), c(55, 43, 26), c(180, 177, 172), c(220, 217, 211), c(255, 252, 245), c(135, 133, 129), c(152, 89, 36), c(186, 109, 44), c(216, 127, 51), c(114, 67, 27), c(125, 53, 152), c(153, 65, 186), c(178, 76, 216), c(94, 40, 114), c(72, 108, 152), c(88, 132, 186), c(102, 153, 216), c(54, 81, 114), c(161, 161, 36), c(197, 197, 44), c(229, 229, 51), c(121, 121, 27), c(89, 144, 17), c(109, 176, 21), c(127, 204, 25), c(67, 108, 13), c(170, 89, 116), c(208, 109, 142), c(242, 127, 165), c(128, 67, 87), c(53, 53, 53), c(65, 65, 65), c(76, 76, 76), c(40, 40, 40), c(108, 108, 108), c(132, 132, 132), c(153, 153, 153), c(81, 81, 81), c(53, 89, 108), c(65, 109, 132), c(76, 127, 153), c(40, 67, 81), c(89, 44, 125), c(109, 54, 153), c(127, 63, 178), c(67, 33, 94), c(36, 53, 125), c(44, 65, 153), c(51, 76, 178), c(27, 40, 94), c(72, 53, 36), c(88, 65, 44), c(102, 76, 51), c(54, 40, 27), c(72, 89, 36), c(88, 109, 44), c(102, 127, 51), c(54, 67, 27), c(108, 36, 36), c(132, 44, 44), c(153, 51, 51), c(81, 27, 27), c(17, 17, 17), c(21, 21, 21), c(25, 25, 25), c(13, 13, 13), c(176, 168, 54), c(215, 205, 66), c(250, 238, 77), c(132, 126, 40), c(64, 154, 150), c(79, 188, 183), c(92, 219, 213), c(48, 115, 112), c(52, 90, 180), c(63, 110, 220), c(74, 128, 255), c(39, 67, 135), c(0, 153, 40), c(0, 187, 50), c(0, 217, 58), c(0, 114, 30), c(14, 14, 21), c(18, 17, 26), c(21, 20, 31), c(11, 10, 16), c(79, 1, 0), c(96, 1, 0), c(112, 2, 0), c(59, 1, 0)};
++    /** @deprecated */
++    @Deprecated
++    public static final byte TRANSPARENT = 0;
++    /** @deprecated */
++    @Deprecated
++    public static final byte LIGHT_GREEN = 4;
++    /** @deprecated */
++    @Deprecated
++    public static final byte LIGHT_BROWN = 8;
++    /** @deprecated */
++    @Deprecated
++    public static final byte GRAY_1 = 12;
++    /** @deprecated */
++    @Deprecated
++    public static final byte RED = 16;
++    /** @deprecated */
++    @Deprecated
++    public static final byte PALE_BLUE = 20;
++    /** @deprecated */
++    @Deprecated
++    public static final byte GRAY_2 = 24;
++    /** @deprecated */
++    @Deprecated
++    public static final byte DARK_GREEN = 28;
++    /** @deprecated */
++    @Deprecated
++    public static final byte WHITE = 32;
++    /** @deprecated */
++    @Deprecated
++    public static final byte LIGHT_GRAY = 36;
++    /** @deprecated */
++    @Deprecated
++    public static final byte BROWN = 40;
++    /** @deprecated */
++    @Deprecated
++    public static final byte DARK_GRAY = 44;
++    /** @deprecated */
++    @Deprecated
++    public static final byte BLUE = 48;
++    /** @deprecated */
++    @Deprecated
++    public static final byte DARK_BROWN = 52;
++
++    private static Color c(int r, int g, int b) {
++        return new Color(r, g, b);
++    }
++
++    private static double getDistance(Color c1, Color c2) {
++        double rmean = (double) (c1.getRed() + c2.getRed()) / 2.0D;
++        double r = (double) (c1.getRed() - c2.getRed());
++        double g = (double) (c1.getGreen() - c2.getGreen());
++        int b = c1.getBlue() - c2.getBlue();
++        double weightR = 2.0D + rmean / 256.0D;
++        double weightG = 4.0D;
++        double weightB = 2.0D + (255.0D - rmean) / 256.0D;
++
++        return weightR * r * r + weightG * g * g + weightB * (double) b * (double) b;
++    }
++
++    public static BufferedImage resizeImage(Image image) {
++        BufferedImage result = new BufferedImage(128, 128, 2);
++        Graphics2D graphics = result.createGraphics();
++
++        graphics.drawImage(image, 0, 0, 128, 128, (ImageObserver) null);
++        graphics.dispose();
++        return result;
++    }
++
++    /** @deprecated */
++    @Deprecated
++    public static byte[] imageToBytes(Image image) {
++        BufferedImage temp = new BufferedImage(image.getWidth((ImageObserver) null), image.getHeight((ImageObserver) null), 2);
++        Graphics2D graphics = temp.createGraphics();
++
++        graphics.drawImage(image, 0, 0, (ImageObserver) null);
++        graphics.dispose();
++        int[] pixels = new int[temp.getWidth() * temp.getHeight()];
++
++        temp.getRGB(0, 0, temp.getWidth(), temp.getHeight(), pixels, 0, temp.getWidth());
++        byte[] result = new byte[temp.getWidth() * temp.getHeight()];
++
++        for (int i = 0; i < pixels.length; ++i) {
++            result[i] = matchColor(new Color(pixels[i], true));
++        }
++
++        return result;
++    }
++
++    /** @deprecated */
++    @Deprecated
++    public static byte matchColor(int r, int g, int b) {
++        return matchColor(new Color(r, g, b));
++    }
++
++    /** @deprecated */
++    @Deprecated
++    public static byte matchColor(Color color) {
++        if (color.getAlpha() < 128) {
++            return (byte) 0;
++        } else {
++            int index = 0;
++            double best = -1.0D;
++
++            for (int i = 4; i < MapPalette.colors.length; ++i) {
++                double distance = getDistance(color, MapPalette.colors[i]);
++
++                if (distance < best || best == -1.0D) {
++                    best = distance;
++                    index = i;
++                }
++            }
++
++            return (byte) (index < 128 ? index : -129 + (index - 127));
++        }
++    }
++
++    /** @deprecated */
++    @Deprecated
++    public static Color getColor(byte index) {
++        if ((index <= -113 || index >= 0) && index <= 127) {
++            return MapPalette.colors[index >= 0 ? index : index + 256];
++        } else {
++            throw new IndexOutOfBoundsException();
++        }
++    }
++}
+diff --git a/proxy/src/main/java/org/bukkit/map/MinecraftFont.java b/proxy/src/main/java/org/bukkit/map/MinecraftFont.java
+new file mode 100644
+index 0000000..da5afba
+--- /dev/null
++++ b/proxy/src/main/java/org/bukkit/map/MinecraftFont.java
+@@ -0,0 +1,53 @@
++package org.bukkit.map;
++
++public class MinecraftFont extends MapFont {
++
++    private static final int spaceSize = 2;
++    private static final String fontChars = " !\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_\'abcdefghijklmnopqrstuvwxyz{|}~\u007fÇüéâäàåçêëèïîìÄÅÉæÆôöòûùÿÖÜø£Ø×ƑáíóúñÑªº¿®¬½¼¡«»";
++    private static final int[][] fontData = new int[][] { new int[8], { 126, 129, 165, 129, 189, 153, 129, 126}, { 126, 255, 219, 255, 195, 231, 255, 126}, { 54, 127, 127, 127, 62, 28, 8, 0}, { 8, 28, 62, 127, 62, 28, 8, 0}, { 28, 62, 28, 127, 127, 62, 28, 62}, { 8, 8, 28, 62, 127, 62, 28, 62}, { 0, 0, 24, 60, 60, 24, 0, 0}, { 255, 255, 231, 195, 195, 231, 255, 255}, { 0, 60, 102, 66, 66, 102, 60, 0}, { 255, 195, 153, 189, 189, 153, 195, 255}, { 240, 224, 240, 190, 51, 51, 51, 30}, { 60, 102, 102, 102, 60, 24, 126, 24}, { 252, 204, 252, 12, 12, 14, 15, 7}, { 254, 198, 254, 198, 198, 230, 103, 3}, { 153, 90, 60, 231, 231, 60, 90, 153}, { 1, 7, 31, 127, 31, 7, 1, 0}, { 64, 112, 124, 127, 124, 112, 64, 0}, { 24, 60, 126, 24, 24, 126, 60, 24}, { 102, 102, 102, 102, 102, 0, 102, 0}, { 254, 219, 219, 222, 216, 216, 216, 0}, { 124, 198, 28, 54, 54, 28, 51, 30}, { 0, 0, 0, 0, 126, 126, 126, 0}, { 24, 60, 126, 24, 126, 60, 24, 255}, { 24, 60, 126, 24, 24, 24, 24, 0}, { 24, 24, 24, 24, 126, 60, 24, 0}, { 0, 24, 48, 127, 48, 24, 0, 0}, { 0, 12, 6, 127, 6, 12, 0, 0}, { 0, 0, 3, 3, 3, 127, 0, 0}, { 0, 36, 102, 255, 102, 36, 0, 0}, { 0, 24, 60, 126, 255, 255, 0, 0}, { 0, 255, 255, 126, 60, 24, 0, 0}, new int[8], { 1, 1, 1, 1, 1, 0, 1, 0}, { 10, 10, 5, 0, 0, 0, 0, 0}, { 10, 10, 31, 10, 31, 10, 10, 0}, { 4, 30, 1, 14, 16, 15, 4, 0}, { 17, 9, 8, 4, 2, 18, 17, 0}, { 4, 10, 4, 22, 13, 9, 22, 0}, { 2, 2, 1, 0, 0, 0, 0, 0}, { 12, 2, 1, 1, 1, 2, 12, 0}, { 3, 4, 8, 8, 8, 4, 3, 0}, { 0, 0, 9, 6, 9, 0, 0, 0}, { 0, 4, 4, 31, 4, 4, 0, 0}, { 0, 0, 0, 0, 0, 1, 1, 1}, { 0, 0, 0, 31, 0, 0, 0, 0}, { 0, 0, 0, 0, 0, 1, 1, 0}, { 16, 8, 8, 4, 2, 2, 1, 0}, { 14, 17, 25, 21, 19, 17, 14, 0}, { 4, 6, 4, 4, 4, 4, 31, 0}, { 14, 17, 16, 12, 2, 17, 31, 0}, { 14, 17, 16, 12, 16, 17, 14, 0}, { 24, 20, 18, 17, 31, 16, 16, 0}, { 31, 1, 15, 16, 16, 17, 14, 0}, { 12, 2, 1, 15, 17, 17, 14, 0}, { 31, 17, 16, 8, 4, 4, 4, 0}, { 14, 17, 17, 14, 17, 17, 14, 0}, { 14, 17, 17, 30, 16, 8, 6, 0}, { 0, 1, 1, 0, 0, 1, 1, 0}, { 0, 1, 1, 0, 0, 1, 1, 1}, { 8, 4, 2, 1, 2, 4, 8, 0}, { 0, 0, 31, 0, 0, 31, 0, 0}, { 1, 2, 4, 8, 4, 2, 1, 0}, { 14, 17, 16, 8, 4, 0, 4, 0}, { 30, 33, 45, 45, 61, 1, 30, 0}, { 14, 17, 31, 17, 17, 17, 17, 0}, { 15, 17, 15, 17, 17, 17, 15, 0}, { 14, 17, 1, 1, 1, 17, 14, 0}, { 15, 17, 17, 17, 17, 17, 15, 0}, { 31, 1, 7, 1, 1, 1, 31, 0}, { 31, 1, 7, 1, 1, 1, 1, 0}, { 30, 1, 25, 17, 17, 17, 14, 0}, { 17, 17, 31, 17, 17, 17, 17, 0}, { 7, 2, 2, 2, 2, 2, 7, 0}, { 16, 16, 16, 16, 16, 17, 14, 0}, { 17, 9, 7, 9, 17, 17, 17, 0}, { 1, 1, 1, 1, 1, 1, 31, 0}, { 17, 27, 21, 17, 17, 17, 17, 0}, { 17, 19, 21, 25, 17, 17, 17, 0}, { 14, 17, 17, 17, 17, 17, 14, 0}, { 15, 17, 15, 1, 1, 1, 1, 0}, { 14, 17, 17, 17, 17, 9, 22, 0}, { 15, 17, 15, 17, 17, 17, 17, 0}, { 30, 1, 14, 16, 16, 17, 14, 0}, { 31, 4, 4, 4, 4, 4, 4, 0}, { 17, 17, 17, 17, 17, 17, 14, 0}, { 17, 17, 17, 17, 10, 10, 4, 0}, { 17, 17, 17, 17, 21, 27, 17, 0}, { 17, 10, 4, 10, 17, 17, 17, 0}, { 17, 10, 4, 4, 4, 4, 4, 0}, { 31, 16, 8, 4, 2, 1, 31, 0}, { 7, 1, 1, 1, 1, 1, 7, 0}, { 1, 2, 2, 4, 8, 8, 16, 0}, { 7, 4, 4, 4, 4, 4, 7, 0}, { 4, 10, 17, 0, 0, 0, 0, 0}, { 0, 0, 0, 0, 0, 0, 0, 31}, { 1, 1, 2, 0, 0, 0, 0, 0}, { 0, 0, 14, 16, 30, 17, 30, 0}, { 1, 1, 13, 19, 17, 17, 15, 0}, { 0, 0, 14, 17, 1, 17, 14, 0}, { 16, 16, 22, 25, 17, 17, 30, 0}, { 0, 0, 14, 17, 31, 1, 30, 0}, { 12, 2, 15, 2, 2, 2, 2, 0}, { 0, 0, 30, 17, 17, 30, 16, 15}, { 1, 1, 13, 19, 17, 17, 17, 0}, { 1, 0, 1, 1, 1, 1, 1, 0}, { 16, 0, 16, 16, 16, 17, 17, 14}, { 1, 1, 9, 5, 3, 5, 9, 0}, { 1, 1, 1, 1, 1, 1, 2, 0}, { 0, 0, 11, 21, 21, 17, 17, 0}, { 0, 0, 15, 17, 17, 17, 17, 0}, { 0, 0, 14, 17, 17, 17, 14, 0}, { 0, 0, 13, 19, 17, 15, 1, 1}, { 0, 0, 22, 25, 17, 30, 16, 16}, { 0, 0, 13, 19, 1, 1, 1, 0}, { 0, 0, 30, 1, 14, 16, 15, 0}, { 2, 2, 7, 2, 2, 2, 4, 0}, { 0, 0, 17, 17, 17, 17, 30, 0}, { 0, 0, 17, 17, 17, 10, 4, 0}, { 0, 0, 17, 17, 21, 21, 30, 0}, { 0, 0, 17, 10, 4, 10, 17, 0}, { 0, 0, 17, 17, 17, 30, 16, 15}, { 0, 0, 31, 8, 4, 2, 31, 0}, { 12, 2, 2, 1, 2, 2, 12, 0}, { 1, 1, 1, 0, 1, 1, 1, 0}, { 3, 4, 4, 8, 4, 4, 3, 0}, { 38, 25, 0, 0, 0, 0, 0, 0}, { 0, 0, 4, 10, 17, 17, 31, 0}, { 14, 17, 1, 1, 17, 14, 16, 12}, { 10, 0, 17, 17, 17, 17, 30, 0}, { 24, 0, 14, 17, 31, 1, 30, 0}, { 14, 17, 14, 16, 30, 17, 30, 0}, { 10, 0, 14, 16, 30, 17, 30, 0}, { 3, 0, 14, 16, 30, 17, 30, 0}, { 4, 0, 14, 16, 30, 17, 30, 0}, { 0, 14, 17, 1, 17, 14, 16, 12}, { 14, 17, 14, 17, 31, 1, 30, 0}, { 10, 0, 14, 17, 31, 1, 30, 0}, { 3, 0, 14, 17, 31, 1, 30, 0}, { 5, 0, 2, 2, 2, 2, 2, 0}, { 14, 17, 4, 4, 4, 4, 4, 0}, { 3, 0, 2, 2, 2, 2, 2, 0}, { 17, 14, 17, 31, 17, 17, 17, 0}, { 4, 0, 14, 17, 31, 17, 17, 0}, { 24, 0, 31, 1, 7, 1, 31, 0}, { 0, 0, 10, 20, 30, 5, 30, 0}, { 30, 5, 15, 5, 5, 5, 29, 0}, { 14, 17, 14, 17, 17, 17, 14, 0}, { 10, 0, 14, 17, 17, 17, 14, 0}, { 3, 0, 14, 17, 17, 17, 14, 0}, { 14, 17, 0, 17, 17, 17, 30, 0}, { 3, 0, 17, 17, 17, 17, 30, 0}, { 10, 0, 17, 17, 17, 30, 16, 15}, { 17, 14, 17, 17, 17, 17, 14, 0}, { 17, 0, 17, 17, 17, 17, 14, 0}, { 0, 0, 14, 25, 21, 19, 14, 4}, { 12, 18, 2, 15, 2, 2, 31, 0}, { 14, 17, 25, 21, 19, 17, 14, 0}, { 0, 0, 5, 2, 5, 0, 0, 0}, { 8, 20, 4, 14, 4, 4, 5, 2}, { 24, 0, 14, 16, 30, 17, 30, 0}, { 3, 0, 1, 1, 1, 1, 1, 0}, { 24, 0, 14, 17, 17, 17, 14, 0}, { 24, 0, 17, 17, 17, 17, 30, 0}, { 31, 0, 15, 17, 17, 17, 17, 0}, { 31, 0, 17, 19, 21, 25, 17, 0}, { 14, 16, 31, 30, 0, 31, 0, 0}, { 14, 17, 17, 14, 0, 31, 0, 0}, { 4, 0, 4, 2, 1, 17, 14, 0}, { 0, 30, 45, 37, 43, 30, 0, 0}, { 0, 0, 0, 31, 16, 16, 0, 0}, { 17, 9, 8, 4, 18, 10, 25, 0}, { 17, 9, 8, 4, 26, 26, 17, 0}, { 0, 1, 0, 1, 1, 1, 1, 0}, { 0, 20, 10, 5, 10, 20, 0, 0}, { 0, 5, 10, 20, 10, 5, 0, 0}, { 68, 17, 68, 17, 68, 17, 68, 17}, { 170, 85, 170, 85, 170, 85, 170, 85}, { 219, 238, 219, 119, 219, 238, 219, 119}, { 24, 24, 24, 24, 24, 24, 24, 24}, { 24, 24, 24, 24, 31, 24, 24, 24}, { 24, 24, 31, 24, 31, 24, 24, 24}, { 108, 108, 108, 108, 111, 108, 108, 108}, { 0, 0, 0, 0, 127, 108, 108, 108}, { 0, 0, 31, 24, 31, 24, 24, 24}, { 108, 108, 111, 96, 111, 108, 108, 108}, { 108, 108, 108, 108, 108, 108, 108, 108}, { 0, 0, 127, 96, 111, 108, 108, 108}, { 108, 108, 111, 96, 127, 0, 0, 0}, { 108, 108, 108, 108, 127, 0, 0, 0}, { 24, 24, 31, 24, 31, 0, 0, 0}, { 0, 0, 0, 0, 31, 24, 24, 24}, { 24, 24, 24, 24, 248, 0, 0, 0}, { 24, 24, 24, 24, 255, 0, 0, 0}, { 0, 0, 0, 0, 255, 24, 24, 24}, { 24, 24, 24, 24, 248, 24, 24, 24}, { 0, 0, 0, 0, 255, 0, 0, 0}, { 24, 24, 24, 24, 255, 24, 24, 24}, { 24, 24, 248, 24, 248, 24, 24, 24}, { 108, 108, 108, 108, 236, 108, 108, 108}, { 108, 108, 236, 12, 252, 0, 0, 0}, { 0, 0, 252, 12, 236, 108, 108, 108}, { 108, 108, 239, 0, 255, 0, 0, 0}, { 0, 0, 255, 0, 239, 108, 108, 108}, { 108, 108, 236, 12, 236, 108, 108, 108}, { 0, 0, 255, 0, 255, 0, 0, 0}, { 108, 108, 239, 0, 239, 108, 108, 108}, { 24, 24, 255, 0, 255, 0, 0, 0}, { 108, 108, 108, 108, 255, 0, 0, 0}, { 0, 0, 255, 0, 255, 24, 24, 24}, { 0, 0, 0, 0, 255, 108, 108, 108}, { 108, 108, 108, 108, 252, 0, 0, 0}, { 24, 24, 248, 24, 248, 0, 0, 0}, { 0, 0, 248, 24, 248, 24, 24, 24}, { 0, 0, 0, 0, 252, 108, 108, 108}, { 108, 108, 108, 108, 255, 108, 108, 108}, { 24, 24, 255, 24, 255, 24, 24, 24}, { 24, 24, 24, 24, 31, 0, 0, 0}, { 0, 0, 0, 0, 248, 24, 24, 24}, { 255, 255, 255, 255, 255, 255, 255, 255}, { 0, 0, 0, 0, 255, 255, 255, 255}, { 15, 15, 15, 15, 15, 15, 15, 15}, { 240, 240, 240, 240, 240, 240, 240, 240}, { 255, 255, 255, 255, 0, 0, 0, 0}, { 0, 0, 110, 59, 19, 59, 110, 0}, { 0, 30, 51, 31, 51, 31, 3, 3}, { 0, 63, 51, 3, 3, 3, 3, 0}, { 0, 127, 54, 54, 54, 54, 54, 0}, { 63, 51, 6, 12, 6, 51, 63, 0}, { 0, 0, 126, 27, 27, 27, 14, 0}, { 0, 102, 102, 102, 102, 62, 6, 3}, { 0, 110, 59, 24, 24, 24, 24, 0}, { 63, 12, 30, 51, 51, 30, 12, 63}, { 28, 54, 99, 127, 99, 54, 28, 0}, { 28, 54, 99, 99, 54, 54, 119, 0}, { 56, 12, 24, 62, 51, 51, 30, 0}, { 0, 0, 126, 219, 219, 126, 0, 0}, { 96, 48, 126, 219, 219, 126, 6, 3}, { 28, 6, 3, 31, 3, 6, 28, 0}, { 30, 51, 51, 51, 51, 51, 51, 0}, { 0, 63, 0, 63, 0, 63, 0, 0}, { 12, 12, 63, 12, 12, 0, 63, 0}, { 6, 12, 24, 12, 6, 0, 63, 0}, { 24, 12, 6, 12, 24, 0, 63, 0}, { 112, 216, 216, 24, 24, 24, 24, 24}, { 24, 24, 24, 24, 24, 27, 27, 14}, { 12, 12, 0, 63, 0, 12, 12, 0}, { 0, 110, 59, 0, 110, 59, 0, 0}, { 28, 54, 54, 28, 0, 0, 0, 0}, { 0, 0, 0, 24, 24, 0, 0, 0}, { 0, 0, 0, 0, 24, 0, 0, 0}, { 240, 48, 48, 48, 55, 54, 60, 56}, { 30, 54, 54, 54, 54, 0, 0, 0}, { 14, 24, 12, 6, 30, 0, 0, 0}, { 0, 0, 60, 60, 60, 60, 0, 0}, new int[8]};
++    public static final MinecraftFont Font = new MinecraftFont(false);
++
++    public MinecraftFont() {
++        this(true);
++    }
++
++    private MinecraftFont(boolean malleable) {
++        for (int i = 1; i < MinecraftFont.fontData.length; ++i) {
++            char ch = (char) i;
++
++            if (i >= 32 && i < 32 + " !\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_\'abcdefghijklmnopqrstuvwxyz{|}~\u007fÇüéâäàåçêëèïîìÄÅÉæÆôöòûùÿÖÜø£Ø×ƑáíóúñÑªº¿®¬½¼¡«»".length()) {
++                ch = " !\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_\'abcdefghijklmnopqrstuvwxyz{|}~\u007fÇüéâäàåçêëèïîìÄÅÉæÆôöòûùÿÖÜø£Ø×ƑáíóúñÑªº¿®¬½¼¡«»".charAt(i - 32);
++            }
++
++            if (ch == 32) {
++                this.setChar(ch, new MapFont.CharacterSprite(2, 8, new boolean[16]));
++            } else {
++                int[] rows = MinecraftFont.fontData[i];
++                int width = 0;
++
++                int r;
++
++                for (int i1 = 0; i1 < 8; ++i1) {
++                    for (r = 0; r < 8; ++r) {
++                        if ((rows[i1] & 1 << r) != 0 && r > width) {
++                            width = r;
++                        }
++                    }
++                }
++
++                ++width;
++                boolean[] aboolean = new boolean[width * 8];
++
++                for (r = 0; r < 8; ++r) {
++                    for (int c = 0; c < width; ++c) {
++                        aboolean[r * width + c] = (rows[r] & 1 << c) != 0;
++                    }
++                }
++
++                this.setChar(ch, new MapFont.CharacterSprite(width, 8, aboolean));
++            }
++        }
++
++        this.malleable = malleable;
++    }
++}
+diff --git a/proxy/src/main/java/ru/yooxa/bungee/connection/CaptchaBridge.java b/proxy/src/main/java/ru/yooxa/bungee/connection/CaptchaBridge.java
+new file mode 100644
+index 0000000..2698c6b
+--- /dev/null
++++ b/proxy/src/main/java/ru/yooxa/bungee/connection/CaptchaBridge.java
+@@ -0,0 +1,293 @@
++package ru.yooxa.bungee.connection;
++
++import com.google.common.base.Preconditions;
++import io.netty.buffer.ByteBuf;
++import io.netty.channel.Channel;
++import java.util.HashSet;
++import java.util.Iterator;
++import java.util.Map;
++import java.util.Random;
++import java.util.concurrent.ConcurrentHashMap;
++import java.util.concurrent.atomic.AtomicInteger;
++import java.util.logging.Level;
++import net.md_5.bungee.BungeeCord;
++import net.md_5.bungee.UserConnection;
++import net.md_5.bungee.Util;
++import net.md_5.bungee.api.Callback;
++import net.md_5.bungee.api.ProxyServer;
++import net.md_5.bungee.api.event.PlayerDisconnectEvent;
++import net.md_5.bungee.api.event.PostLoginEvent;
++import net.md_5.bungee.connection.UpstreamBridge;
++import net.md_5.bungee.netty.ChannelWrapper;
++import net.md_5.bungee.netty.HandlerBoss;
++import net.md_5.bungee.netty.PacketHandler;
++import net.md_5.bungee.protocol.DefinedPacket;
++import net.md_5.bungee.protocol.ProtocolConstants;
++import net.md_5.bungee.protocol.packet.Chat;
++import net.md_5.bungee.protocol.packet.ClientSettings;
++import net.md_5.bungee.protocol.packet.KeepAlive;
++import ru.yooxa.database.SqlStorage;
++import ru.yooxa.ycore.Connection;
++
++public class CaptchaBridge extends PacketHandler {
++
++    private static final Random random = new Random();
++    private static String TIMEOUT;
++    private static String ENTER_CAPTCHA;
++    private static String INVALID;
++    private final UserConnection con;
++    private boolean settings;
++    private boolean keepAlive;
++    private boolean move;
++    private int captcha = getRandomCaptcha();
++    private static Map connections = new ConcurrentHashMap();
++    private static SqlStorage sql;
++    private static final String prefix = "[§cCaptcha§f] ";
++    private static AtomicInteger a = new AtomicInteger();
++    private final long joinTime = System.currentTimeMillis();
++    private int moveCount = 0;
++    private int retrys = 3;
++
++    public static void init() {
++        CaptchaBridge.sql = new SqlStorage();
++        CaptchaBridge.TIMEOUT = SqlStorage.messageTimeout;
++        CaptchaBridge.ENTER_CAPTCHA = SqlStorage.messageEnter;
++        CaptchaBridge.ENTER_CAPTCHA = SqlStorage.messageEnter;
++        CaptchaBridge.INVALID = SqlStorage.messageInvalid;
++
++        try {
++            CaptchaGenerator captchagenerator = new CaptchaGenerator();
++            SqlStorage sqlstorage = CaptchaBridge.sql;
++
++            captchagenerator.generate(CaptchaBridge.sql.threads, SqlStorage.minCaptcha, SqlStorage.maxCaptcha);
++        } catch (Exception exception) {
++            System.out.println("Exception while generate maps");
++            exception.printStackTrace();
++            System.exit(0);
++        }
++
++    }
++
++    public CaptchaBridge() {
++        this.con = null;
++    }
++
++    public static int getOnline() {
++        return CaptchaBridge.connections.size();
++    }
++
++    public UserConnection getCon() {
++        return this.con;
++    }
++
++    public long getJoinTime() {
++        return this.joinTime;
++    }
++
++    public CaptchaBridge(UserConnection connection) {
++        this.con = connection;
++        CaptchaBridge.a.incrementAndGet();
++        this.connected();
++    }
++
++    private void connected() {
++        int protocol = this.con.getPendingConnection().getHandshake().getProtocolVersion();
++        Channel channel = this.con.getCh().getHandle();
++
++        this.con.setClientEntityId(-1);
++        byte id1;
++        byte id2;
++        byte id3;
++
++        if (protocol > 47) {
++            id1 = 35;
++            id2 = 67;
++            id3 = 46;
++        } else {
++            id1 = 1;
++            id2 = 5;
++            id3 = 8;
++        }
++
++        this.write(channel, Connection.login, protocol, id1);
++        this.write(channel, Connection.spawnPosition, protocol, id2);
++        if (protocol > 47) {
++            this.write(channel, Connection.chunk1_9, protocol, 32);
++            this.write(channel, Connection.setSlot, protocol, 22);
++            this.write(channel, Connection.abilities1_9, protocol, 43);
++        } else {
++            this.write(channel, Connection.setSlot, protocol, 47);
++        }
++
++        this.write(channel, Connection.playerPosition, protocol, id3);
++        this.resetCaptcha();
++        CaptchaBridge.connections.put(this.con, this);
++        if (SqlStorage.connectionsLog) {
++            ProxyServer.getInstance().getLogger().log(Level.INFO, "{0} has connected", this);
++        }
++
++    }
++
++    private void write(Channel channel, DefinedPacket packet, int protocol, int id) {
++        ByteBuf buf = channel.alloc().buffer();
++
++        DefinedPacket.writeVarInt(id, buf);
++        packet.write(buf, ProtocolConstants.Direction.TO_CLIENT, protocol);
++        channel.write(buf);
++    }
++
++    private void write(Channel channel, ByteBuf buf) {
++        ByteBuf buffer = buf.copy();
++
++        channel.write(buffer);
++    }
++
++    public void exception(Throwable t) throws Exception {
++        if (!this.isBot()) {
++            this.con.disconnect(Util.exception(t));
++            this.con.getCh().close();
++        } else {
++            this.con.getCh().close();
++        }
++
++    }
++
++    public void disconnected(ChannelWrapper channel) throws Exception {
++        CaptchaBridge.connections.remove(this.con);
++        this.con.getCh().close();
++        BungeeCord.getInstance().getPluginManager().callEvent(new PlayerDisconnectEvent(this.con));
++    }
++
++    public void handle(KeepAlive alive) throws Exception {
++        if (alive.getRandomId() == this.con.getSentPingId()) {
++            int newPing = (int) (System.currentTimeMillis() - this.con.getSentPingTime());
++
++            this.con.setPing(newPing);
++        }
++    }
++
++    private void resetCaptcha() {
++        int protocol = this.con.getPendingConnection().getHandshake().getProtocolVersion();
++        Channel channel = this.con.getCh().getHandle();
++
++        this.captcha = getRandomCaptcha();
++        this.write(channel, Connection.getCaptcha(this.captcha, protocol));
++        channel.flush();
++    }
++
++    private boolean isBot() {
++        return !this.settings;
++    }
++
++    private static int getRandomCaptcha() {
++        return CaptchaBridge.random.nextInt(CaptchaGenerator.max - CaptchaGenerator.min) + CaptchaGenerator.min;
++    }
++
++    public void handle(Chat chat) throws Exception {
++        Preconditions.checkArgument(chat.getMessage().length() <= 100, "Chat message too long");
++        if (this.isBot()) {
++            this.con.sendMessage("[§cCaptcha§f] Введите номер с картинки.");
++        } else {
++            if (!chat.getMessage().equals(String.valueOf(this.captcha))) {
++                if (--this.retrys == 0) {
++                    this.con.disconnect("[§cCaptcha§f] Неверная капча");
++                    this.con.getCh().close();
++                } else {
++                    this.resetCaptcha();
++                    this.con.sendMessage(String.format(CaptchaBridge.INVALID, new Object[] { Integer.valueOf(this.retrys), this.retrys == 1 ? "а" : "и"}));
++                }
++            } else {
++                this.finish();
++            }
++
++        }
++    }
++
++    private void finish() {
++        this.con.serverr = true;
++        ((HandlerBoss) this.con.getCh().getHandle().pipeline().get(HandlerBoss.class)).setHandler(new UpstreamBridge(ProxyServer.getInstance(), this.con));
++        ProxyServer.getInstance().getPluginManager().callEvent(new PostLoginEvent(this.con));
++        this.con.connect(ProxyServer.getInstance().getServerInfo(this.con.getPendingConnection().getListener().getDefaultServer()), (Callback) null, true);
++        CaptchaBridge.sql.addIp(this.con.getAddress().getAddress().getHostAddress());
++        CaptchaBridge.connections.remove(this.con);
++    }
++
++    public void handle(ClientSettings settings) throws Exception {
++        this.settings = true;
++        this.con.setSettings(settings);
++    }
++
++    public String toString() {
++        return "[" + this.con.getName() + "] <-> CaptchaBridge";
++    }
++
++    static {
++        (new Thread(new Runnable() {
++            public void run() {
++                label39:
++                while (true) {
++                    if (!Thread.interrupted()) {
++                        try {
++                            Thread.sleep(2500L);
++                        } catch (InterruptedException interruptedexception) {
++                            interruptedexception.printStackTrace();
++                        }
++
++                        long curr = System.currentTimeMillis();
++                        HashSet toRemove = new HashSet();
++                        Iterator iterator = CaptchaBridge.connections.values().iterator();
++
++                        CaptchaBridge b;
++
++                        while (iterator.hasNext()) {
++                            b = (CaptchaBridge) iterator.next();
++                            if (curr - b.getJoinTime() >= (long) SqlStorage.timeout) {
++                                if (!b.isBot()) {
++                                    b.getCon().disconnect(CaptchaBridge.TIMEOUT);
++                                    b.getCon().getCh().close();
++                                } else {
++                                    b.getCon().getCh().close();
++                                }
++
++                                toRemove.add(b);
++                            } else {
++                                b.getCon().sendMessage(CaptchaBridge.ENTER_CAPTCHA);
++                            }
++                        }
++
++                        iterator = toRemove.iterator();
++
++                        while (true) {
++                            if (!iterator.hasNext()) {
++                                continue label39;
++                            }
++
++                            b = (CaptchaBridge) iterator.next();
++                            CaptchaBridge.connections.remove(b.getCon());
++                        }
++                    }
++
++                    return;
++                }
++            }
++        }, "Captcha TimeoutHandler")).start();
++        (new Thread(new Runnable() {
++            public void run() {
++                for (; !Thread.interrupted(); CaptchaBridge.a.set(0)) {
++                    try {
++                        Thread.sleep(5000L);
++                    } catch (InterruptedException interruptedexception) {
++                        interruptedexception.printStackTrace();
++                    }
++
++                    int i = CaptchaBridge.a.get();
++
++                    if (i > 0) {
++                        System.out.println("[Captcha] Connections per 5 seconds - " + i);
++                    }
++                }
++
++            }
++        }, "Captcha ConnectionsCounter")).start();
++    }
++}
+diff --git a/proxy/src/main/java/ru/yooxa/bungee/connection/CaptchaGenerator.java b/proxy/src/main/java/ru/yooxa/bungee/connection/CaptchaGenerator.java
+new file mode 100644
+index 0000000..f95a8c5
+--- /dev/null
++++ b/proxy/src/main/java/ru/yooxa/bungee/connection/CaptchaGenerator.java
+@@ -0,0 +1,83 @@
++package ru.yooxa.bungee.connection;
++
++import com.github.cage.GCage;
++import io.netty.buffer.ByteBuf;
++import java.awt.image.BufferedImage;
++import java.util.concurrent.ExecutorService;
++import java.util.concurrent.Executors;
++import java.util.concurrent.atomic.AtomicInteger;
++import net.md_5.bungee.protocol.packet.extra.MapDataPacket;
++import org.bukkit.map.CraftMapCanvas;
++import org.bukkit.map.MapPalette;
++import ru.yooxa.ycore.Connection;
++import ru.yooxa.ycore.GenerateTask;
++
++public class CaptchaGenerator {
++
++    public static int min = 100;
++    public static int max = 999;
++    private AtomicInteger count = new AtomicInteger();
++    private static final GCage localGCage = new GCage();
++
++    public void generate(int threads, int min, int max) throws Exception {
++        Connection.min = min;
++        CaptchaGenerator.min = min;
++        CaptchaGenerator.max = max;
++        System.out.println("Generate maps");
++        long start = System.currentTimeMillis();
++        int all = max - min + 1;
++
++        this.count.set(0);
++        Connection.min = min;
++        Connection.maps1_8 = new ByteBuf[all];
++        Connection.maps1_9 = new ByteBuf[all];
++        ExecutorService executor = Executors.newFixedThreadPool(threads);
++
++        int i;
++
++        for (i = min; i <= max; ++i) {
++            executor.execute(new GenerateTask(this, i));
++        }
++
++        while ((i = this.count.get()) != all) {
++            try {
++                System.out.println(i + " of " + all + " [" + (int) ((double) i / (double) all * 100.0D) + " %]");
++                Thread.sleep(1000L);
++            } catch (InterruptedException interruptedexception) {
++                return;
++            }
++        }
++
++        executor.shutdown();
++        System.out.println("Captcha generated (" + (System.currentTimeMillis() - start) + " ms)");
++        start = System.currentTimeMillis();
++        System.gc();
++        System.out.println("Performed GC (" + (System.currentTimeMillis() - start) + " ms)");
++    }
++
++    public void increment() {
++        this.count.incrementAndGet();
++    }
++
++    public void generateMap(int captcha) {
++        String s = String.valueOf(captcha);
++        CraftMapCanvas map = new CraftMapCanvas();
++
++        map.drawImage(0, 0, MapPalette.resizeImage(createCaptchaImage(s)));
++
++        try {
++            MapDataPacket ex = new MapDataPacket(0, (byte) 0, MapDataPacket.Type.IMAGE, map.getMapData());
++
++            Connection.maps1_8[captcha - CaptchaGenerator.min] = Connection.getBytes(ex, 52, 47);
++            Connection.maps1_9[captcha - CaptchaGenerator.min] = Connection.getBytes(ex, 36, 107);
++        } catch (Exception exception) {
++            System.out.println("Ошибка генерации картинок, сообщите разработчику - vk.com/yooxa");
++            System.exit(0);
++        }
++
++    }
++
++    public static BufferedImage createCaptchaImage(String paramString) {
++        return CaptchaGenerator.localGCage.drawImage(paramString);
++    }
++}
+diff --git a/proxy/src/main/java/ru/yooxa/database/SqlStorage.java b/proxy/src/main/java/ru/yooxa/database/SqlStorage.java
+new file mode 100644
+index 0000000..8482b45
+--- /dev/null
++++ b/proxy/src/main/java/ru/yooxa/database/SqlStorage.java
+@@ -0,0 +1,79 @@
++package ru.yooxa.database;
++
++import java.io.File;
++import java.util.HashSet;
++import java.util.Set;
++import net.md_5.bungee.config.Configuration;
++import net.md_5.bungee.config.ConfigurationProvider;
++import net.md_5.bungee.config.YamlConfiguration;
++
++public class SqlStorage {
++
++    private static Set ips = new HashSet();
++    private String host;
++    private String username;
++    private String password;
++    private String database;
++    public int threads;
++    public static boolean connectionsLog;
++    public static boolean captchaOnline;
++    public static String motd;
++    public static String messageTimeout;
++    public static String messageEnter;
++    public static String messageInvalid;
++    public static int minCaptcha;
++    public static int maxCaptcha;
++    public static int timeout;
++
++    public SqlStorage() {
++        this.loadConfig();
++    }
++
++        public static boolean isWhite(String ip) {
++        return SqlStorage.ips.contains(ip);
++    }
++    
++    private void loadConfig() {
++        File file = new File("captcha.yml");
++
++        try {
++            Configuration config;
++
++            if (!file.exists()) {
++                config = new Configuration();
++                config.set("Image-Generation-Threads", Integer.valueOf(2));
++                config.set("Log-Join", Boolean.valueOf(true));
++                config.set("Ping-Motd", "BungeeCord 1.8");
++                config.set("Timeout", Integer.valueOf(15000));
++                config.set("Message-Timeout", "[§cCaptcha§f] Вы слишком долго вводили капчу");
++                config.set("Message-Enter", "[§cCaptcha§f] Введите номер с картинки в чат, чтобы пройти проверку. Открыть чат кнопкой \"T\" (английская)");
++                config.set("Message-Invalid", "[§cCaptcha§f] Неверная капча, у вас осталось §e%d§f попытк%s");
++                config.set("Min-Captcha", Integer.valueOf(100));
++                config.set("Mam-Captcha", Integer.valueOf(999));
++                ConfigurationProvider.getProvider(YamlConfiguration.class).save(config, file);
++                System.out.println("Configuration file created, please change settings in file \'captcha.yml\'");
++                System.out.println("Я создал конфиг. Редактируй \'captcha.yml\'");
++                System.exit(0);
++            } else {
++                config = ConfigurationProvider.getProvider(YamlConfiguration.class).load(file);
++            }
++
++            this.threads = config.getInt("Image-Generation-Threads");
++            SqlStorage.timeout = config.getInt("Timeout");
++            SqlStorage.connectionsLog = config.getBoolean("Log-Join");
++            SqlStorage.motd = config.getString("Ping-Motd", "BungeeCord 1.8");
++            SqlStorage.messageTimeout = config.getString("Message-Timeout");
++            SqlStorage.messageEnter = config.getString("Message-Enter");
++            SqlStorage.messageInvalid = config.getString("Message-Invalid");
++            SqlStorage.minCaptcha = config.getInt("Min-Captcha", 100);
++            SqlStorage.maxCaptcha = config.getInt("Mam-Captcha", 999);
++        } catch (Exception exception) {
++            exception.printStackTrace();
++        }
++
++    }
++
++    public void addIp(String ip) {
++        SqlStorage.ips.add(ip);
++    }
++}
+diff --git a/proxy/src/main/java/ru/yooxa/ycore/Connection.java b/proxy/src/main/java/ru/yooxa/ycore/Connection.java
+new file mode 100644
+index 0000000..bb28c80
+--- /dev/null
++++ b/proxy/src/main/java/ru/yooxa/ycore/Connection.java
+@@ -0,0 +1,56 @@
++package ru.yooxa.ycore;
++
++import io.netty.buffer.ByteBuf;
++import io.netty.buffer.ByteBufAllocator;
++import java.util.HashMap;
++import java.util.Map;
++import net.md_5.bungee.protocol.DefinedPacket;
++import net.md_5.bungee.protocol.ProtocolConstants;
++import net.md_5.bungee.protocol.packet.Login;
++import net.md_5.bungee.protocol.packet.extra.ChunkPacket;
++import net.md_5.bungee.protocol.packet.extra.PlayerAbilities;
++import net.md_5.bungee.protocol.packet.extra.PlayerPositionRotation;
++import net.md_5.bungee.protocol.packet.extra.SetSlot;
++import net.md_5.bungee.protocol.packet.extra.SpawnPosition;
++
++public class Connection {
++
++    public static int min;
++    public static ByteBuf[] maps1_8;
++    public static ByteBuf[] maps1_9;
++    private static final int MAX_ID = 4;
++    private static final Map packets1_8 = new HashMap(4);
++    private static final Map packets1_9 = new HashMap(4);
++    public static final Login login = new Login(-1, (short) 0, 0, (short) 0, (short) 100, "flat", false);
++    public static final SpawnPosition spawnPosition = new SpawnPosition(5, 60, 5);
++    public static final PlayerPositionRotation playerPosition = new PlayerPositionRotation(5.0D, 500.0D, 5.0D, 90.0F, 90.0F);
++    public static final SetSlot setSlot = new SetSlot(0, 36, 358, 0);
++    public static final ChunkPacket chunk1_9 = new ChunkPacket(0, 0);
++    public static final PlayerAbilities abilities1_9 = new PlayerAbilities((byte) 6, 0.0F, 0.0F);
++
++    public static ByteBuf getCaptcha(int captcha, int protocol) {
++        return protocol > 47 ? Connection.maps1_9[captcha - Connection.min] : Connection.maps1_8[captcha - Connection.min];
++    }
++
++    public static ByteBuf getPacket(int id, int protocol) {
++        if (id >= 1 && id <= 4) {
++            Map map = protocol > 47 ? Connection.packets1_9 : Connection.packets1_8;
++
++            return (ByteBuf) map.get(Integer.valueOf(id));
++        } else {
++            throw new IllegalStateException();
++        }
++    }
++
++    private static ByteBuf getBytes(DefinedPacket packet, int id) throws Exception {
++        return getBytes(packet, id, 47);
++    }
++
++    public static ByteBuf getBytes(DefinedPacket packet, int id, int protocol) throws Exception {
++        ByteBuf buffer = ByteBufAllocator.DEFAULT.buffer();
++
++        DefinedPacket.writeVarInt(id, buffer);
++        packet.write(buffer, ProtocolConstants.Direction.TO_CLIENT, protocol);
++        return buffer;
++    }
++}
+diff --git a/proxy/src/main/java/ru/yooxa/ycore/GenerateTask.java b/proxy/src/main/java/ru/yooxa/ycore/GenerateTask.java
+new file mode 100644
+index 0000000..2bd1002
+--- /dev/null
++++ b/proxy/src/main/java/ru/yooxa/ycore/GenerateTask.java
+@@ -0,0 +1,36 @@
++package ru.yooxa.ycore;
++
++import java.lang.reflect.Method;
++
++public class GenerateTask implements Runnable {
++
++    private final Object generator;
++    private Method generateMap;
++    private Method increment;
++    private final int n;
++
++    public GenerateTask(Object generator, int n) {
++        this.generator = generator;
++
++        try {
++            this.generateMap = generator.getClass().getMethod("generateMap", new Class[] { Integer.TYPE});
++            this.increment = generator.getClass().getMethod("increment", new Class[0]);
++        } catch (Exception exception) {
++            exception.printStackTrace();
++            System.exit(0);
++        }
++
++        this.n = n;
++    }
++
++    public void run() {
++        try {
++            this.generateMap.invoke(this.generator, new Object[] { Integer.valueOf(this.n)});
++            this.increment.invoke(this.generator, new Object[0]);
++        } catch (Exception exception) {
++            exception.printStackTrace();
++            System.exit(0);
++        }
++
++    }
++}
+diff --git a/proxy/src/main/resources/messages.properties b/proxy/src/main/resources/messages.properties
+index 30b0e8f..378d882 100644
+--- a/proxy/src/main/resources/messages.properties
++++ b/proxy/src/main/resources/messages.properties
+@@ -1,26 +1,27 @@
+ alert=\u00a78[\u00a74Alert\u00a78]\u00a7r 
+-already_connected=\u00a7cYou are already connected to this server!
++already_connected=\u00a7c\u0412\u044B \u0443\u0436\u0435 \u043D\u0430 \u0441\u0435\u0440\u0432\u0435\u0440\u0435.!
+ already_connected_proxy=\u00a7cYou are already connected to this proxy!
+-already_connecting=\u00a7cAlready connecting to this server!
++already_connecting=\u00a7c\u041C\u044B \u043F\u043E\u0434\u043A\u043B\u044E\u0447\u0430\u0435\u043C \u0412\u0430\u0441 \u043A \u0441\u0435\u0440\u0432\u0435\u0440\u0443. \u041F\u043E\u0434\u043E\u0436\u0434\u0438\u0442\u0435 \u043D\u0435\u043C\u043D\u043E\u0433\u043E.
+ command_list=\u00a7a[{0}] \u00a7e({1}): \u00a7r{2}
+-connect_kick=\u00a7cKicked whilst connecting to {0}: {1}
+-current_server=\u00a76You are currently connected to {0}.
+-fallback_kick=\u00a7cCould not connect to a default or fallback server, please try again later: {0}
+-fallback_lobby=\u00a7cCould not connect to target server, you have been moved to a fallback server.
+-lost_connection=[Proxy] Lost connection to server.
++connect_kick=\u00a7c\u0412\u044B \u043A\u0438\u043A\u043D\u0443\u0442\u044B \u043F\u0440\u0438 \u043F\u043E\u0434\u043A\u043B\u044E\u0447\u0435\u043D\u0438\u0438 \u043A {0}: {1}
++connect_kick_outdated_forge=\u00a7cYour version of Forge is outdated. Please update Forge and try again.
++current_server=\u00a76\u0412\u044B \u0443\u0436\u0435 \u043F\u043E\u0434\u043A\u043B\u044E\u0447\u0435\u043D\u044B \u043A {0}
++fallback_kick=\u00a7c \u041D\u0435 \u043C\u043E\u0433\u0443 \u043F\u043E\u0434\u043A\u043B\u044E\u0447\u0438\u0442\u044C \u0412\u0430\u0441 \u043D\u0430 \u0441\u0435\u0440\u0432\u0435\u0440\u0430, \u043F\u043E\u043F\u0440\u043E\u0431\u0443\u0439\u0442\u0435 \u0447\u0435\u0440\u0435\u0437 20 \u0441\u0435\u043A\u0443\u043D\u0434
++fallback_lobby=\u00a7c\u041D\u0435 \u0432\u043E\u0437\u043C\u043E\u0436\u043D\u043E \u043F\u043E\u0434\u043A\u043B\u044E\u0447\u0438\u0442\u044C\u0441\u044F \u043D\u0430 \u044D\u0442\u043E\u0442 \u0441\u0435\u0440\u0432\u0435\u0440, \u0432\u044B \u0431\u044B\u043B\u0438 \u043F\u0435\u0440\u0435\u043C\u0435\u0449\u0435\u043D\u044B \u043D\u0430 \u0437\u0430\u043F\u043E\u0441\u043D\u043E\u0439 \u0441\u0435\u0440\u0432\u0435\u0440.
++lost_connection= \u041F\u043E\u0442\u0435\u0440\u044F\u043D\u043E \u0441\u043E\u0435\u0434\u0438\u043D\u0435\u043D\u0438\u0435 \u0441 \u0441\u0435\u0440\u0432\u0435\u0440\u043E\u043C.
+ mojang_fail=Error occurred while contacting login servers, are they down?
+-no_permission=\u00a7cYou do not have permission to execute this command!
+-no_server=\u00a7cThe specified server does not exist.
+-no_server_permission=\u00a7cYou don't have permission to access this server.
+-outdated_client=Outdated Client!
+-outdated_server=Outdated Server!
+-proxy_full=Server is full!
+-restart=[Proxy] Proxy restarting.
+-server_kick=[Kicked] 
+-server_list=\u00a76You may connect to the following servers at this time: 
+-server_went_down=\u00a7cThe server you were previously on went down, you have been connected to a fallback server
+-total_players=Total players online: {0}
+-name_too_long=Cannot have username longer than 16 characters
+-name_invalid=Username contains invalid characters.
+-ping_cannot_connect=\u00a7c[Bungee] Can't connect to server.
+-join_throttle_kick=You have connected too fast. You must wait at least {0} seconds between connections.
++no_permission=\u00a7c\u0412\u044B \u043D\u0435 \u043C\u043E\u0436\u0435\u0442\u0435 \u0438\u0441\u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u044C \u044D\u0442\u0443 \u043A\u043E\u043C\u0430\u043D\u0434\u0443!
++no_server=\u00a7c\u0422\u0430\u043A\u043E\u0433\u043E \u0441\u0435\u0440\u0432\u0435\u0440\u0430 \u043D\u0435 \u0441\u0443\u0449\u0435\u0441\u0442\u0432\u0443\u0435\u0442.
++no_server_permission=\u00a7c\u0412\u044B \u043D\u0435 \u043C\u043E\u0436\u0435\u0442\u0435 \u0437\u0430\u0439\u0442\u0438 \u043D\u0430 \u044D\u0442\u043E\u0442 \u0441\u0435\u0440\u0432\u0435\u0440.
++outdated_client=\u0412\u0430\u0448 \u043A\u043B\u0438\u0435\u043D\u0442 \u0443\u0441\u0442\u0430\u0440\u0435\u043B. \u0418\u0441\u043F\u043E\u043B\u044C\u0437\u0443\u0439\u0442\u0435 1.8-1.8.7!
++outdated_server=\u0421\u0435\u0440\u0432\u0435\u0440 \u0443\u0441\u0442\u0430\u0440\u0435\u043B. \u041C\u044B \u0438\u0441\u043F\u043E\u043B\u044C\u0437\u0443\u0435\u043C \u0432\u0435\u0440\u0441\u0438\u044E 1.8-1.8.7!
++proxy_full=\u0421\u0435\u0440\u0432\u0435\u0440 \u0437\u0430\u043F\u043E\u043B\u043D\u0435\u043D!
++restart=\u0421\u0435\u0440\u0432\u0435\u0440 \u043F\u0435\u0440\u0435\u0437\u0430\u0433\u0440\u0443\u0436\u0430\u0435\u0442\u0441\u044F.
++server_kick=[\u041A\u0438\u043A\u043D\u0443\u0442] 
++server_list=\u00a76\u0414\u043E\u0441\u0442\u0443\u043F\u043D\u044B\u0435 \u0441\u0435\u0440\u0432\u0435\u0440\u0430: 
++server_went_down=\u00a7c\u0421\u0435\u0440\u0432\u0435\u0440 ,\u043D\u0430 \u043A\u043E\u0442\u043E\u0440\u043E\u043C \u0432\u044B \u0438\u0433\u0440\u0430\u043B\u0438, \u0441\u0435\u0439\u0447\u0430\u0441 \u0432\u044B\u043A\u043B\u044E\u0447\u0438\u043B\u0441\u044F, \u0432\u044B \u0431\u044B\u043B\u0438 \u043F\u0435\u0440\u043C\u0435\u0449\u0435\u043D\u044B \u0432 \u0445\u0430\u0431.
++total_players=\u0418\u0433\u0440\u043E\u043A\u043E\u0432 \u043E\u043D\u043B\u0430\u0439\u043D: {0}
++name_too_long=\u041C\u0430\u043A\u0441\u0438\u043C\u0430\u043B\u044C\u043D\u0430\u044F \u0434\u043B\u0438\u043D\u0430 \u043D\u0438\u043A\u0430 16 \u0441\u0438\u043C\u0432\u043E\u043B\u043E\u0432
++name_invalid=\u0412 \u0432\u0430\u0448\u0435\u043C \u043D\u0438\u043A\u0435 \u0441\u043E\u0434\u0435\u0440\u0436\u0430\u0442\u0441\u044F \u043D\u0435 \u0434\u043E\u043F\u0443\u0441\u0442\u0438\u043C\u044B\u0435 \u0441\u0438\u043C\u0432\u043E\u043B\u044B.
++ping_cannot_connect=\u00a7c\u041D\u0435 \u043C\u043E\u0433\u0443 \u043F\u043E\u0434\u043A\u043B\u044E\u0447\u0438\u0442\u044C\u0441\u044F \u043A \u0441\u0435\u0440\u0432\u0435\u0440\u0443. \u0423\u0436\u0435 \u0438\u0441\u0440\u0430\u0432\u043B\u044F\u0435\u043C.
++join_throttle_kick=\u041F\u043E\u0434\u043E\u0436\u0434\u0438\u0442\u0435 {0} \u0441\u0435\u043A\u0443\u043D\u0434 \u043F\u0435\u0440\u0435\u0434 \u0442\u0435\u043C \u043A\u0430\u043A \u0437\u0430\u0439\u0442\u0438 \u0437\u0430\u043D\u043E\u0432\u043E.
+-- 
+2.6.1.windows.1
+
