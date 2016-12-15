@@ -1,0 +1,855 @@
+From 686878ef608f7f1bec21a41ddae211be10511733 Mon Sep 17 00:00:00 2001
+From: Dimatert9 <mikimouse100@mail.ru>
+Date: Thu, 15 Dec 2016 20:00:18 +0200
+Subject: [PATCH] add russian translate, fix captcha
+
+
+diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
+index 520ee31..8c7251f 100644
+--- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
++++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
+@@ -160,7 +160,7 @@ public class PluginManager
+             {
+                 if ( proxy.getConfig().isLogCommands() )
+                 {
+-                    proxy.getLogger().log( Level.INFO, "{0} executed command: /{1}", new Object[]
++                    proxy.getLogger().log( Level.INFO, "{0} использовал: /{1}", new Object[]
+                     {
+                         sender.getName(), commandLine
+                     } );
+@@ -210,7 +210,7 @@ public class PluginManager
+             PluginDescription plugin = entry.getValue();
+             if ( !enablePlugin( pluginStatuses, new Stack<PluginDescription>(), plugin ) )
+             {
+-                ProxyServer.getInstance().getLogger().log( Level.WARNING, "Failed to enable {0}", entry.getKey() );
++                ProxyServer.getInstance().getLogger().log( Level.WARNING, "§cОшибка при включении плагина {0}", entry.getKey() );
+             }
+         }
+         toLoad.clear();
+@@ -224,13 +224,13 @@ public class PluginManager
+             try
+             {
+                 plugin.onEnable();
+-                ProxyServer.getInstance().getLogger().log( Level.INFO, "Enabled plugin {0} version {1} by {2}", new Object[]
++                ProxyServer.getInstance().getLogger().log( Level.INFO, "Включен плагин {0} версиии {1} от {2}", new Object[]
+                 {
+                     plugin.getDescription().getName(), plugin.getDescription().getVersion(), plugin.getDescription().getAuthor()
+                 } );
+             } catch ( Throwable t )
+             {
+-                ProxyServer.getInstance().getLogger().log( Level.WARNING, "Exception encountered when loading plugin: " + plugin.getDescription().getName(), t );
++                ProxyServer.getInstance().getLogger().log( Level.WARNING, "§cОшибка при включении плагина: " + plugin.getDescription().getName(), t );
+             }
+         }
+     }
+@@ -278,7 +278,7 @@ public class PluginManager
+ 
+             if ( dependStatus == Boolean.FALSE && plugin.getDepends().contains( dependName ) ) // only fail if this wasn't a soft dependency
+             {
+-                ProxyServer.getInstance().getLogger().log( Level.WARNING, "{0} (required by {1}) is unavailable", new Object[]
++                ProxyServer.getInstance().getLogger().log( Level.WARNING, "§cПлагин{0} (нужен для {1}) отсутствует", new Object[]
+                 {
+                     String.valueOf( dependName ), plugin.getName()
+                 } );
+@@ -306,13 +306,13 @@ public class PluginManager
+                 clazz.init( proxy, plugin );
+                 plugins.put( plugin.getName(), clazz );
+                 clazz.onLoad();
+-                ProxyServer.getInstance().getLogger().log( Level.INFO, "Loaded plugin {0} version {1} by {2}", new Object[]
++                ProxyServer.getInstance().getLogger().log( Level.INFO, "Загружен плагин {0} версии {1} от {2}", new Object[]
+                 {
+                     plugin.getName(), plugin.getVersion(), plugin.getAuthor()
+                 } );
+             } catch ( Throwable t )
+             {
+-                proxy.getLogger().log( Level.WARNING, "Error enabling plugin " + plugin.getName(), t );
++                proxy.getLogger().log( Level.WARNING, "§cНе удалось загрузить плагин " + plugin.getName(), t );
+             }
+         }
+ 
+diff --git a/bootstrap/src/main/java/net/md_5/bungee/Bootstrap.java b/bootstrap/src/main/java/net/md_5/bungee/Bootstrap.java
+index a4516ed..27c42da 100644
+--- a/bootstrap/src/main/java/net/md_5/bungee/Bootstrap.java
++++ b/bootstrap/src/main/java/net/md_5/bungee/Bootstrap.java
+@@ -7,9 +7,8 @@ public class Bootstrap
+     {
+         if ( Float.parseFloat( System.getProperty( "java.class.version" ) ) < 52.0 )
+         {
+-            System.err.println( "*** ERROR *** Waterfall requires Java 8 or above to function! Please download and install it!" );
+-            System.out.println( "You can check your Java version with the command: java -version" );
+-            return;
++           System.err.println( "*** ERROR *** Нужна java 8//You need java 8!" );
++           return;
+         }
+ 
+         BungeeCordLauncher.main( args );
+diff --git a/bootstrap/src/main/java/net/md_5/bungee/BungeeCordLauncher.java b/bootstrap/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
+index 5e1773c..3683819 100644
+--- a/bootstrap/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
++++ b/bootstrap/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
+@@ -41,17 +41,17 @@ public class BungeeCordLauncher
+             deadline.add( Calendar.WEEK_OF_YEAR, -4 );
+             if ( buildDate.before( deadline.getTime() ) )
+             {
+-                System.err.println( "*** Warning, this build is outdated ***" );
+-                System.err.println( "*** Please download a new build from https://ci.aquifermc.org/job/Waterfall/ ***" );
+-                System.err.println( "*** You will get NO support regarding this build ***" );
+-                System.err.println( "*** Server will start in 10 seconds ***" );
+-                Thread.sleep( TimeUnit.SECONDS.toMillis( 10 ) );
++                System.err.println( "*** Этот билд устарел, но это сообщение никто не увидет :( ***" );
++                System.err.println( "*** А если вдруг увидели то ищите новую версию у меня в сборке ***" );
++                System.err.println( "*** Тут типо предупреждение, что не будет помощи с этим билдом ***" );
++                System.err.println( "*** Типо статуем через 10 секунд(5) ***" );
++                Thread.sleep( TimeUnit.SECONDS.toMillis( 5 ) );
+             }
+         }
+ 
+         BungeeCord bungee = new BungeeCord();
+         ProxyServer.setInstance( bungee );
+-        bungee.getLogger().info( "Enabled Waterfall version " + bungee.getVersion() );
++        bungee.getLogger().info( "§aВключаю WaterFall. §cCaptcha by Yooxa, §bПеренесена на WaterFall by Slavik123123123123" );
+         bungee.start();
+ 
+         if ( !options.has( "noconsole" ) )
+@@ -61,7 +61,7 @@ public class BungeeCordLauncher
+             {
+                 if ( !bungee.getPluginManager().dispatchCommand( ConsoleCommandSender.getInstance(), line ) )
+                 {
+-                    bungee.getConsole().sendMessage( ChatColor.RED + "Command not found" );
++                    bungee.getConsole().sendMessage( ChatColor.RED + "Команда не найдена" );
+                 }
+             }
+         }
+diff --git a/module/cmd-alert/src/main/java/net/md_5/bungee/module/cmd/alert/CommandAlert.java b/module/cmd-alert/src/main/java/net/md_5/bungee/module/cmd/alert/CommandAlert.java
+index e3bdbc4..bba6e71 100644
+--- a/module/cmd-alert/src/main/java/net/md_5/bungee/module/cmd/alert/CommandAlert.java
++++ b/module/cmd-alert/src/main/java/net/md_5/bungee/module/cmd/alert/CommandAlert.java
+@@ -18,7 +18,7 @@ public class CommandAlert extends Command
+     {
+         if ( args.length == 0 )
+         {
+-            sender.sendMessage( ChatColor.RED + "You must supply a message." );
++            sender.sendMessage( ChatColor.RED + "Введите сообщение." );
+         } else
+         {
+             StringBuilder builder = new StringBuilder();
+diff --git a/module/cmd-alert/src/main/java/net/md_5/bungee/module/cmd/alert/CommandAlertRaw.java b/module/cmd-alert/src/main/java/net/md_5/bungee/module/cmd/alert/CommandAlertRaw.java
+index 24da97b..4f0594e 100644
+--- a/module/cmd-alert/src/main/java/net/md_5/bungee/module/cmd/alert/CommandAlertRaw.java
++++ b/module/cmd-alert/src/main/java/net/md_5/bungee/module/cmd/alert/CommandAlertRaw.java
+@@ -23,7 +23,7 @@ public class CommandAlertRaw extends Command
+     {
+         if ( args.length == 0 )
+         {
+-            sender.sendMessage( ChatColor.RED + "You must supply a message." );
++            sender.sendMessage( ChatColor.RED + "Введите сообщение." );
+         } else
+         {
+             String message = Joiner.on( ' ' ).join( args );
+@@ -41,13 +41,13 @@ public class CommandAlertRaw extends Command
+                 if ( sender instanceof ProxiedPlayer )
+                 {
+                     sender.sendMessage(
+-                            new ComponentBuilder( "An error occurred while parsing your message. (Hover for details)" ).
++                            new ComponentBuilder( "Произошла ошибка. Наведите на этот текст для деталей" ).
+                             color( ChatColor.RED ).underlined( true ).
+                             event( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder( error.getMessage() ).color( ChatColor.RED ).create() ) ).
+                             create() );
+                 } else
+                 {
+-                    sender.sendMessage( new ComponentBuilder( "An error occurred while parsing your message: " ).color( ChatColor.RED ).append( error.getMessage() ).create() );
++                    sender.sendMessage( new ComponentBuilder( "Произошла ошибка: " ).color( ChatColor.RED ).append( error.getMessage() ).create() );
+                 }
+             }
+         }
+diff --git a/module/cmd-find/src/main/java/net/md_5/bungee/module/cmd/find/CommandFind.java b/module/cmd-find/src/main/java/net/md_5/bungee/module/cmd/find/CommandFind.java
+index e679964..bd30781 100644
+--- a/module/cmd-find/src/main/java/net/md_5/bungee/module/cmd/find/CommandFind.java
++++ b/module/cmd-find/src/main/java/net/md_5/bungee/module/cmd/find/CommandFind.java
+@@ -19,16 +19,16 @@ public class CommandFind extends PlayerCommand
+     {
+         if ( args.length != 1 )
+         {
+-            sender.sendMessage( ChatColor.RED + "Please follow this command by a user name" );
++            sender.sendMessage( ChatColor.RED + "Введите имя игрока" );
+         } else
+         {
+             ProxiedPlayer player = ProxyServer.getInstance().getPlayer( args[0] );
+             if ( player == null || player.getServer() == null )
+             {
+-                sender.sendMessage( ChatColor.RED + "That user is not online" );
++                sender.sendMessage( ChatColor.RED + "Игрок не онлайн" );
+             } else
+             {
+-                sender.sendMessage( ChatColor.GREEN + args[0] + " is online at " + player.getServer().getInfo().getName() );
++                sender.sendMessage( ChatColor.GREEN + args[0] + " находится на сервере " + player.getServer().getInfo().getName() );
+             }
+         }
+     }
+diff --git a/module/cmd-send/src/main/java/net/md_5/bungee/module/cmd/send/CommandSend.java b/module/cmd-send/src/main/java/net/md_5/bungee/module/cmd/send/CommandSend.java
+index 3dbde9b..0bd7c0d 100644
+--- a/module/cmd-send/src/main/java/net/md_5/bungee/module/cmd/send/CommandSend.java
++++ b/module/cmd-send/src/main/java/net/md_5/bungee/module/cmd/send/CommandSend.java
+@@ -26,7 +26,7 @@ public class CommandSend extends Command implements TabExecutor
+     {
+         if ( args.length != 2 )
+         {
+-            sender.sendMessage( ChatColor.RED + "Not enough arguments, usage: /send <server|player|all|current> <target>" );
++            sender.sendMessage( ChatColor.RED + "Использование: /send <server|player|all|current> <сервер>" );
+             return;
+         }
+         ServerInfo target = ProxyServer.getInstance().getServerInfo( args[1] );
+@@ -46,7 +46,7 @@ public class CommandSend extends Command implements TabExecutor
+         {
+             if ( !( sender instanceof ProxiedPlayer ) )
+             {
+-                sender.sendMessage( ChatColor.RED + "Only in game players can use this command" );
++                sender.sendMessage( ChatColor.RED + "Вы не игрок" );
+                 return;
+             }
+             ProxiedPlayer player = (ProxiedPlayer) sender;
+@@ -69,13 +69,13 @@ public class CommandSend extends Command implements TabExecutor
+                 ProxiedPlayer player = ProxyServer.getInstance().getPlayer( args[0] );
+                 if ( player == null )
+                 {
+-                    sender.sendMessage( ChatColor.RED + "That player is not online" );
++                    sender.sendMessage( ChatColor.RED + "Игрок не онлайн" );
+                     return;
+                 }
+                 summon( player, target, sender );
+             }
+         }
+-        sender.sendMessage( ChatColor.GREEN + "Successfully summoned player(s)" );
++        sender.sendMessage( ChatColor.GREEN + "Игрок успешно перенесен на другой сервер" );
+     }
+ 
+     private void summon(ProxiedPlayer player, ServerInfo target, CommandSender sender)
+@@ -83,7 +83,7 @@ public class CommandSend extends Command implements TabExecutor
+         if ( player.getServer() != null && !player.getServer().getInfo().equals( target ) )
+         {
+             player.connect( target );
+-            player.sendMessage( ChatColor.GOLD + "Summoned to " + target.getName() + " by " + sender.getName() );
++            player.sendMessage( ChatColor.GOLD + "Вы перемещены на " + target.getName() + " игроком " + sender.getName() );
+         }
+     }
+ 
+diff --git a/module/cmd-server/src/main/java/net/md_5/bungee/module/cmd/server/CommandServer.java b/module/cmd-server/src/main/java/net/md_5/bungee/module/cmd/server/CommandServer.java
+index 36da83e..a3eb411 100644
+--- a/module/cmd-server/src/main/java/net/md_5/bungee/module/cmd/server/CommandServer.java
++++ b/module/cmd-server/src/main/java/net/md_5/bungee/module/cmd/server/CommandServer.java
+@@ -50,8 +50,8 @@ public class CommandServer extends Command implements TabExecutor
+                     TextComponent serverTextComponent = new TextComponent( first ? server.getName() : ", " + server.getName() );
+                     int count = server.getPlayers().size();
+                     serverTextComponent.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT,
+-                            new ComponentBuilder( count + ( count == 1 ? " player" : " players" ) + "\n" )
+-                            .append( "Click to connect to the server" ).italic( true )
++                            new ComponentBuilder( count + ( count == 1 ? " игрок" : " игрок(а,ов)" ) + "\n" )
++                            .append( "Кликните чтобы зайти на сервер" ).italic( true )
+                             .create() ) );
+                     serverTextComponent.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/server " + server.getName() ) );
+                     serverList.addExtra( serverTextComponent );
+diff --git a/module/reconnect-yaml/src/main/java/net/md_5/bungee/module/reconnect/yaml/YamlReconnectHandler.java b/module/reconnect-yaml/src/main/java/net/md_5/bungee/module/reconnect/yaml/YamlReconnectHandler.java
+index b4cde88..b29b69b 100644
+--- a/module/reconnect-yaml/src/main/java/net/md_5/bungee/module/reconnect/yaml/YamlReconnectHandler.java
++++ b/module/reconnect-yaml/src/main/java/net/md_5/bungee/module/reconnect/yaml/YamlReconnectHandler.java
+@@ -43,7 +43,7 @@ public class YamlReconnectHandler extends AbstractReconnectHandler
+         } catch ( Exception ex )
+         {
+             file.renameTo( new File( "locations.yml.old" ) );
+-            ProxyServer.getInstance().getLogger().log( Level.WARNING, "Could not load reconnect locations, resetting them" );
++            ProxyServer.getInstance().getLogger().log( Level.WARNING, "§cНе могу загрузить файл с локациями. Пересоздаю его" );
+         }
+ 
+         if ( data == null )
+@@ -104,7 +104,7 @@ public class YamlReconnectHandler extends AbstractReconnectHandler
+             yaml.dump( copy, wr );
+         } catch ( IOException ex )
+         {
+-            ProxyServer.getInstance().getLogger().log( Level.WARNING, "Could not save reconnect locations", ex );
++            ProxyServer.getInstance().getLogger().log( Level.WARNING, "§cНе могу сохранить локацию§f", ex );
+         }
+     }
+ 
+diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+index 4fc341f..4df6b18 100644
+--- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
++++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+@@ -280,7 +280,7 @@ public class BungeeCord extends ProxyServer
+         try {
+             CaptchaBridge.init();
+         } catch (Exception exception) {
+-            System.out.println("Ошибка инициализации #0, сообщите разработчику - vk.com/yooxa");
++            System.out.println("Ошибка инициализации #0, сообщите разработчику - vk.com/yooxa (vk.com/leymooo_s)");
+             System.exit(0);
+             return;
+         }
+@@ -314,10 +314,10 @@ public class BungeeCord extends ProxyServer
+                     if ( future.isSuccess() )
+                     {
+                         listeners.add( future.channel() );
+-                        getLogger().log( Level.INFO, "Listening on {0}", info.getHost() );
++                        getLogger().log( Level.INFO, "§cСервер запущен на §a{0}", info.getHost() );
+                     } else
+                     {
+-                        getLogger().log( Level.WARNING, "Could not bind to host " + info.getHost(), future.cause() );
++                        getLogger().log( Level.WARNING, "§4Не могу запустить сервер на §6" + info.getHost(), future.cause() );
+                     }
+                 }
+             };
+@@ -342,10 +342,10 @@ public class BungeeCord extends ProxyServer
+                         if ( future.isSuccess() )
+                         {
+                             listeners.add( future.channel() );
+-                            getLogger().log( Level.INFO, "Started query on {0}", future.channel().localAddress() );
++                            getLogger().log( Level.INFO, "§cQuery запущен на §a{0}", future.channel().localAddress() );
+                         } else
+                         {
+-                            getLogger().log( Level.WARNING, "Could not bind to host " + info.getHost(), future.cause() );
++                            getLogger().log( Level.WARNING, "§4Не могу запустить query на §6" + info.getHost(), future.cause() );
+                         }
+                     }
+                 };
+@@ -358,13 +358,13 @@ public class BungeeCord extends ProxyServer
+     {
+         for ( Channel listener : listeners )
+         {
+-            getLogger().log( Level.INFO, "Closing listener {0}", listener );
++            getLogger().log( Level.INFO, "§cЗакрываю соединение на §a{0}", listener );
+             try
+             {
+                 listener.close().syncUninterruptibly();
+             } catch ( ChannelException ex )
+             {
+-                getLogger().severe( "Could not close listen thread" );
++                getLogger().severe( "§4Не могу закрыть соеденение" );
+             }
+         }
+         listeners.clear();
+@@ -389,12 +389,12 @@ public class BungeeCord extends ProxyServer
+                 BungeeCord.this.isRunning = false;
+ 
+                 stopListeners();
+-                getLogger().info( "Closing pending connections" );
++                getLogger().info( "§cЗакрытие ожидающих подключений" );
+ 
+                 connectionLock.readLock().lock();
+                 try
+                 {
+-                    getLogger().log( Level.INFO, "Disconnecting {0} connections", connections.size() );
++                    getLogger().log( Level.INFO, "§cОтключено §a{0} §cигроков", connections.size() );
+                     for ( UserConnection user : connections.values() )
+                     {
+                         user.disconnect( reason );
+@@ -404,7 +404,7 @@ public class BungeeCord extends ProxyServer
+                     connectionLock.readLock().unlock();
+                 }
+ 
+-                getLogger().info( "Closing IO threads" );
++                getLogger().info( "§cСохранение файлов" );
+                 bossEventLoopGroup.shutdownGracefully();
+                 workerEventLoopGroup.shutdownGracefully();
+                 while (true) {
+@@ -417,7 +417,6 @@ public class BungeeCord extends ProxyServer
+ 
+                 if ( reconnectHandler != null )
+                 {
+-                    getLogger().info( "Saving reconnect locations" );
+                     reconnectHandler.save();
+                     reconnectHandler.close();
+                 }
+@@ -425,7 +424,7 @@ public class BungeeCord extends ProxyServer
+                 metricsThread.cancel();
+ 
+                 // TODO: Fix this shit
+-                getLogger().info( "Disabling plugins" );
++                getLogger().info( "§bВыключаю плагины" );
+                 for ( Plugin plugin : Lists.reverse( new ArrayList<>( pluginManager.getPlugins() ) ) )
+                 {
+                     try
+@@ -437,13 +436,15 @@ public class BungeeCord extends ProxyServer
+                         }
+                     } catch ( Throwable t )
+                     {
+-                        getLogger().log( Level.SEVERE, "Exception disabling plugin " + plugin.getDescription().getName(), t );
++                        getLogger().log( Level.SEVERE, "§4Ошибка при выключении плагина §6" + plugin.getDescription().getName(), t );
+                     }
+                     getScheduler().cancel( plugin );
+                     plugin.getExecutorService().shutdownNow();
+                 }
+ 
+-                getLogger().info( "Thank you and goodbye" );
++                getLogger().info( "§3Певерод by Slavik123123123, §9Captcha от Yooxa,  §aПеренес капчу на WaterFall - Slavik123123123" );
++                getLogger().info( "§bСервер выключен" );
++
+                 // Need to close loggers after last message!
+                 for ( Handler handler : getLogger().getHandlers() )
+                 {
+diff --git a/proxy/src/main/java/net/md_5/bungee/ConsoleCommandCompleter.java b/proxy/src/main/java/net/md_5/bungee/ConsoleCommandCompleter.java
+index 455b078..5c959fe 100644
+--- a/proxy/src/main/java/net/md_5/bungee/ConsoleCommandCompleter.java
++++ b/proxy/src/main/java/net/md_5/bungee/ConsoleCommandCompleter.java
+@@ -61,7 +61,7 @@ public class ConsoleCommandCompleter implements Completer
+             }
+         } catch ( ExecutionException ex )
+         {
+-            proxy.getLogger().log( Level.WARNING, "Unhandled exception when tab completing", ex );
++            proxy.getLogger().log( Level.WARNING, "§4Ошибка при изпользовании TAB'а", ex );
+         } catch ( InterruptedException ex )
+         {
+             Thread.currentThread().interrupt();
+diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
+index c98d11c..a427b55 100644
+--- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
++++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
+@@ -270,7 +270,9 @@ public class ServerConnector extends PacketHandler
+             user.setDimension( login.getDimension() );
+ 
+             // Remove from old servers
+-            user.getServer().disconnect( "Quitting" );
++            if (this.user.getServer() != null) {
++                this.user.getServer().disconnect("Quitting");
++            }
+         }
+ 
+         // TODO: Fix this?
+@@ -384,6 +386,6 @@ public class ServerConnector extends PacketHandler
+     @Override
+     public String toString()
+     {
+-        return "[" + user.getName() + "|" + user.getAddress() + "] <-> ServerConnector [" + target.getName() + "]";
++        return "§c[" + user.getAddress() + "|" + user.getName() + "] §bзашёл на §a[" + target.getName() + "]";
+     }
+ }
+diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
+index d02274e..13f7bc4 100644
+--- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
++++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
+@@ -381,7 +381,7 @@ public final class UserConnection implements ProxiedPlayer
+     {
+         if ( !ch.isClosing() )
+         {
+-            bungee.getLogger().log( Level.INFO, "[{0}] disconnected with: {1}", new Object[]
++            bungee.getLogger().log( Level.INFO, "§c[{0}] §4отключен с причиной: §a{1}", new Object[]
+             {
+                 getName(), BaseComponent.toLegacyText( reason )
+             } );
+diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java b/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java
+index b26035c..2053ea6 100644
+--- a/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java
++++ b/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java
+@@ -16,6 +16,6 @@ public class CommandBungee extends Command
+     @Override
+     public void execute(CommandSender sender, String[] args)
+     {
+-        sender.sendMessage( ChatColor.BLUE + "This server is running Waterfall version " + ProxyServer.getInstance().getVersion() + " by md_5" );
++        sender.sendMessage( ChatColor.BLUE + "§6Сервер использует WaterFall. §aПеревод от Slavik123123123, §3Captcha by Yooxa, §bПеренёс капчу на WaterFall - Slavik123123123" );
+     }
+ }
+diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandIP.java b/proxy/src/main/java/net/md_5/bungee/command/CommandIP.java
+index d5d6403..6610e9e 100644
+--- a/proxy/src/main/java/net/md_5/bungee/command/CommandIP.java
++++ b/proxy/src/main/java/net/md_5/bungee/command/CommandIP.java
+@@ -18,16 +18,16 @@ public class CommandIP extends PlayerCommand
+     {
+         if ( args.length < 1 )
+         {
+-            sender.sendMessage( ChatColor.RED + "Please follow this command by a user name" );
++            sender.sendMessage( ChatColor.RED + "Не указан игрок" );
+             return;
+         }
+         ProxiedPlayer user = ProxyServer.getInstance().getPlayer( args[0] );
+         if ( user == null )
+         {
+-            sender.sendMessage( ChatColor.RED + "That user is not online" );
++            sender.sendMessage( ChatColor.RED + "Игрок не онлайн" );
+         } else
+         {
+-            sender.sendMessage( ChatColor.BLUE + "IP of " + args[0] + " is " + user.getAddress() );
++            sender.sendMessage( ChatColor.BLUE + "Айпи игрока " + args[0] + " - " + user.getAddress() );
+         }
+     }
+ }
+diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandPerms.java b/proxy/src/main/java/net/md_5/bungee/command/CommandPerms.java
+index 610825c..96030cf 100644
+--- a/proxy/src/main/java/net/md_5/bungee/command/CommandPerms.java
++++ b/proxy/src/main/java/net/md_5/bungee/command/CommandPerms.java
+@@ -24,7 +24,7 @@ public class CommandPerms extends Command
+         {
+             permissions.addAll( ProxyServer.getInstance().getConfigurationAdapter().getPermissions( group ) );
+         }
+-        sender.sendMessage( ChatColor.GOLD + "You have the following groups: " + Util.csv( sender.getGroups() ) );
++        sender.sendMessage( ChatColor.GOLD + "Игрок имеет следуюшие группы: " + Util.csv( sender.getGroups() ) );
+ 
+         for ( String permission : permissions )
+         {
+diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java b/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
+index 4a49241..3649c4b 100644
+--- a/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
++++ b/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
+@@ -22,7 +22,7 @@ public class CommandReload extends Command
+         BungeeCord.getInstance().startListeners();
+         BungeeCord.getInstance().getPluginManager().callEvent( new ProxyReloadEvent( sender ) );
+ 
+-        sender.sendMessage( ChatColor.BOLD.toString() + ChatColor.RED.toString() + "Waterfall has been reloaded."
+-                + " This is NOT advisable and you will not be supported with any issues that arise! Please restart Waterfall ASAP." );
++        sender.sendMessage( ChatColor.BOLD.toString() + ChatColor.RED.toString() + "Waterfall был перезагружен."
++                + " Данная функция эксперементальная. В случае каких либо ошибок, вы не получите помощи." );
+     }
+ }
+diff --git a/proxy/src/main/java/net/md_5/bungee/command/ConsoleCommandSender.java b/proxy/src/main/java/net/md_5/bungee/command/ConsoleCommandSender.java
+index 49dde16..1c08765 100644
+--- a/proxy/src/main/java/net/md_5/bungee/command/ConsoleCommandSender.java
++++ b/proxy/src/main/java/net/md_5/bungee/command/ConsoleCommandSender.java
+@@ -62,13 +62,13 @@ public class ConsoleCommandSender implements CommandSender
+     @Override
+     public void addGroups(String... groups)
+     {
+-        throw new UnsupportedOperationException( "Console may not have groups" );
++        throw new UnsupportedOperationException( "У консоли есть всё." );
+     }
+ 
+     @Override
+     public void removeGroups(String... groups)
+     {
+-        throw new UnsupportedOperationException( "Console may not have groups" );
++        throw new UnsupportedOperationException( "У консоли есть всё." );
+     }
+ 
+     @Override
+@@ -80,7 +80,7 @@ public class ConsoleCommandSender implements CommandSender
+     @Override
+     public void setPermission(String permission, boolean value)
+     {
+-        throw new UnsupportedOperationException( "Console has all permissions" );
++        throw new UnsupportedOperationException( "У консоли есть всё." );
+     }
+ 
+     @Override
+diff --git a/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java b/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
+index 4d16fa3..47e84cb 100644
+--- a/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
++++ b/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
+@@ -78,7 +78,7 @@ public abstract class Configuration implements ProxyConfig
+                 favicon = Favicon.create( ImageIO.read( fav ) );
+             } catch ( IOException | IllegalArgumentException ex )
+             {
+-                ProxyServer.getInstance().getLogger().log( Level.WARNING, "Could not load server icon", ex );
++                ProxyServer.getInstance().getLogger().log( Level.WARNING, "§сНе удалось загрузить иконку §f", ex );
+             }
+         }
+ 
+@@ -111,20 +111,20 @@ public abstract class Configuration implements ProxyConfig
+             {
+                 ServerInfo newServer = newServers.get(oldServer.getName());
+                 if ((newServer == null || !oldServer.getAddress().equals(newServer.getAddress())) && !oldServer.getPlayers().isEmpty()) {
+-                    BungeeCord.getInstance().getLogger().info("Moving players off of server: " + oldServer.getName());
++                    BungeeCord.getInstance().getLogger().info("§cПеремещяю всех игроков с сервера: " + oldServer.getName());
+                     // The server is being removed, or having it's address changed
+                     for (ProxiedPlayer player : oldServer.getPlayers()) {
+                         ListenerInfo listener = player.getPendingConnection().getListener();
+                         String destinationName = newServers.get(listener.getDefaultServer()) == null ? listener.getDefaultServer() : listener.getFallbackServer();
+                         ServerInfo destination = newServers.get(destinationName);
+                         if (destination == null) {
+-                            BungeeCord.getInstance().getLogger().severe("Couldn't find server " + listener.getDefaultServer() + " or " + listener.getFallbackServer() + " to put player " + player.getName() + " on");
++                            BungeeCord.getInstance().getLogger().severe("§4Не могу найти сервер §a" + listener.getDefaultServer() + " §4или §a" + listener.getFallbackServer() + " §cчтобы переместить игрока §a" + player.getName());
+                             player.disconnect(BungeeCord.getInstance().getTranslation("fallback_kick", "Not found on reload"));
+                             continue;
+                         }
+                         player.connect(destination, (success, cause) -> {
+                             if (!success) {
+-                                BungeeCord.getInstance().getLogger().log(Level.WARNING, "Failed to connect " + player.getName() + " to " + destination.getName(), cause);
++                                BungeeCord.getInstance().getLogger().log(Level.WARNING, "§4Игрок§a " + player.getName() + " §4не может подключиться к §a" + destination.getName(), cause);
+                                 player.disconnect(BungeeCord.getInstance().getTranslation("fallback_kick", cause.getCause().getClass().getName()));
+                             }
+                         });
+@@ -138,13 +138,13 @@ public abstract class Configuration implements ProxyConfig
+             for ( int i = 0; i < listener.getServerPriority().size(); i++ )
+             {
+                 String server = listener.getServerPriority().get( i );
+-                Preconditions.checkArgument( servers.containsKey( server ), "Server %s (priority %s) is not defined", server, i );
++                Preconditions.checkArgument( servers.containsKey( server ), "§4Сервер §a%s §c(приоритет §a%s§c) не найден", server, i );
+             }
+             for ( String server : listener.getForcedHosts().values() )
+             {
+                 if ( !servers.containsKey( server ) )
+                 {
+-                    ProxyServer.getInstance().getLogger().log( Level.WARNING, "Forced host server {0} is not defined", server );
++                    ProxyServer.getInstance().getLogger().log( Level.WARNING, "§cХост сервер §a{0} §cне найден", server );
+                 }
+             }
+         }
+diff --git a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
+index 4ec9782..43a5e73 100644
+--- a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
++++ b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
+@@ -82,7 +82,7 @@ public class YamlConfig implements ConfigurationAdapter
+             }
+         } catch ( IOException ex )
+         {
+-            throw new RuntimeException( "Could not load configuration!", ex );
++            throw new RuntimeException( "Не могу загрузить конфиг!", ex );
+         }
+ 
+         if (!doPermissions) return;
+@@ -177,7 +177,7 @@ public class YamlConfig implements ConfigurationAdapter
+             }
+         } catch ( IOException ex )
+         {
+-            ProxyServer.getInstance().getLogger().log( Level.WARNING, "Could not save config", ex );
++            ProxyServer.getInstance().getLogger().log( Level.WARNING, "Не могу сохранить конфиг", ex );
+         }
+     }
+ 
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
+index 30ee7d1..07bea89 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
+@@ -155,7 +155,7 @@ public class DownstreamBridge extends PacketHandler
+                 }
+                 break;
+             default:
+-                throw new IllegalArgumentException( "Unknown objective action: " + objective.getAction() );
++                throw new IllegalArgumentException( "§4Неизвестное дейстиве с объектом: §a" + objective.getAction() );
+         }
+     }
+ 
+@@ -174,7 +174,7 @@ public class DownstreamBridge extends PacketHandler
+                 serverScoreboard.removeScore( score.getItemName() );
+                 break;
+             default:
+-                throw new IllegalArgumentException( "Unknown scoreboard action: " + score.getAction() );
++                throw new IllegalArgumentException( "§4Неизвестное дейстивие со scoreboard: §a" + score.getAction() );
+         }
+     }
+ 
+@@ -557,6 +557,6 @@ public class DownstreamBridge extends PacketHandler
+     @Override
+     public String toString()
+     {
+-        return "[" + con.getAddress() + "|" + con.getName() + "] <-> DownstreamBridge <-> [" + server.getInfo().getName() + "]";
++        return "§c[" + con.getAddress() + "|" + con.getName() + "] §bпокинул §a[" + server.getInfo().getName() + "]";
+     }
+ }
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+index 9d4cc6d..1f8c9dd 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+@@ -151,7 +151,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+         this.legacy = true;
+         final boolean v1_5 = ping.isV1_5();
+ 
+-        ServerPing legacy = new ServerPing( new ServerPing.Protocol( bungee.getName() + " " + bungee.getGameVersion(), bungee.getProtocolVersion() ),
++        ServerPing legacy = new ServerPing( new ServerPing.Protocol("1.8-1.11", bungee.getProtocolVersion() ),
+                 new ServerPing.Players( listener.getMaxPlayers(), bungee.getOnlineCount(), null ),
+                 new TextComponent( TextComponent.fromLegacyText( listener.getMotd() ) ), (Favicon) null );
+ 
+@@ -239,7 +239,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+         {
+             int protocol = ( ProtocolConstants.SUPPORTED_VERSION_IDS.contains( handshake.getProtocolVersion() ) ) ? handshake.getProtocolVersion() : bungee.getProtocolVersion();
+             pingBack.done( new ServerPing(
+-                    new ServerPing.Protocol( bungee.getName() + " " + bungee.getGameVersion(), protocol ),
++                    new ServerPing.Protocol( "1.8-1.11", protocol ),
+                     new ServerPing.Players( listener.getMaxPlayers(), bungee.getOnlineCount(), null ),
+                     motd, BungeeCord.getInstance().config.getFaviconObject() ),
+                     null );
+@@ -293,7 +293,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+         {
+             case 1:
+                 if (BungeeCord.getInstance().getConfig().isLogServerListPing()) {
+-                    bungee.getLogger().log( Level.INFO, "{0} is pinging", this );
++                    bungee.getLogger().log( Level.INFO, "§c{0} §eпингует сервер", this );
+                 }
+                 // Ping
+                 thisState = State.STATUS;
+@@ -301,7 +301,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+                 break;
+             case 2:
+                 // Login
+-                bungee.getLogger().log( Level.INFO, "{0} has connected", this );
++                bungee.getLogger().log( Level.INFO, "{0} §aподключился к серверу", this );
+                 thisState = State.USERNAME;
+                 ch.setProtocol( Protocol.LOGIN );
+ 
+@@ -622,7 +622,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+     @Override
+     public String toString()
+     {
+-        return "[" + getAddress() + ( getName() != null ? "|" + getName() : "" ) + "] <-> InitialHandler";
++        return "§c[" + getAddress() + ( getName() != null ? "|" + getName() : "" ) + "]";
+     }
+ 
+     @Override
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
+index 9e753d5..2d77c50 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
+@@ -215,6 +215,6 @@ public class UpstreamBridge extends PacketHandler
+     @Override
+     public String toString()
+     {
+-        return "[" + con.getAddress() + "|" + con.getName() + "] -> UpstreamBridge";
++        return "§c[" + con.getAddress() + "|" + con.getName() + "] §bВышел с сервера§7";
+     }
+ }
+diff --git a/proxy/src/main/java/net/md_5/bungee/module/ModuleManager.java b/proxy/src/main/java/net/md_5/bungee/module/ModuleManager.java
+index 901fc5a..297b5de 100644
+--- a/proxy/src/main/java/net/md_5/bungee/module/ModuleManager.java
++++ b/proxy/src/main/java/net/md_5/bungee/module/ModuleManager.java
+@@ -42,7 +42,7 @@ public class ModuleManager
+         ModuleVersion bungeeVersion = ModuleVersion.parse( proxy.getVersion() );
+         if ( bungeeVersion == null )
+         {
+-            System.out.println( "Couldn't detect bungee version. Custom build?" );
++            System.out.println( "Не удалось определить версию WaterFall. Ну и пофиг на неё" );
+             return;
+         }
+ 
+diff --git a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
+index 3efeff8..37d1342 100644
+--- a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
++++ b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
+@@ -42,7 +42,7 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
+ 
+             if ( !( handler instanceof InitialHandler || handler instanceof PingHandler ) )
+             {
+-                ProxyServer.getInstance().getLogger().log( Level.INFO, "{0} has connected", handler );
++                ProxyServer.getInstance().getLogger().log( Level.INFO, "{0}", handler );
+             }
+         }
+     }
+@@ -56,7 +56,7 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
+ 
+             if ( !( handler instanceof InitialHandler || handler instanceof PingHandler ) )
+             {
+-                ProxyServer.getInstance().getLogger().log( Level.INFO, "{0} has disconnected", handler );
++                ProxyServer.getInstance().getLogger().log( Level.INFO, "{0}", handler );
+             }
+         }
+     }
+@@ -98,25 +98,16 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
+         {
+             if ( cause instanceof ReadTimeoutException )
+             {
+-                ProxyServer.getInstance().getLogger().log( Level.WARNING, "{0} - read timed out", handler );
++                ProxyServer.getInstance().getLogger().log( Level.WARNING, "{0}", handler );
+             } else if ( cause instanceof DecoderException && cause.getCause() instanceof BadPacketException )
+             {
+-                ProxyServer.getInstance().getLogger().log( Level.WARNING, "{0} - bad packet ID, are mods in use!? {1}", new Object[]
+-                {
+-                    handler, cause.getCause().getMessage()
+-                } );
++                ProxyServer.getInstance().getLogger().log( Level.WARNING, "{0}",handler);
+             } else if ( cause instanceof DecoderException && cause.getCause() instanceof OverflowPacketException )
+             {
+-                ProxyServer.getInstance().getLogger().log( Level.WARNING, "{0} - overflow in packet detected! {1}", new Object[]
+-                {
+-                    handler, cause.getCause().getMessage()
+-                } );
++                ProxyServer.getInstance().getLogger().log( Level.WARNING, "{0}",handler );
+             } else if ( cause instanceof IOException || ( cause instanceof IllegalStateException && handler instanceof InitialHandler ) )
+             {
+-                ProxyServer.getInstance().getLogger().log( Level.WARNING, "{0} - {1}: {2}", new Object[]
+-                {
+-                    handler, cause.getClass().getSimpleName(), cause.getMessage()
+-                } );
++                ProxyServer.getInstance().getLogger().log( Level.WARNING, "{0}", handler);
+             } else
+             {
+                 ProxyServer.getInstance().getLogger().log( Level.SEVERE, handler + " - encountered exception", cause );
+diff --git a/proxy/src/main/java/ru/yooxa/bungee/connection/CaptchaBridge.java b/proxy/src/main/java/ru/yooxa/bungee/connection/CaptchaBridge.java
+index 2698c6b..3876dc4 100644
+--- a/proxy/src/main/java/ru/yooxa/bungee/connection/CaptchaBridge.java
++++ b/proxy/src/main/java/ru/yooxa/bungee/connection/CaptchaBridge.java
+@@ -123,7 +123,7 @@ public class CaptchaBridge extends PacketHandler {
+         this.resetCaptcha();
+         CaptchaBridge.connections.put(this.con, this);
+         if (SqlStorage.connectionsLog) {
+-            ProxyServer.getInstance().getLogger().log(Level.INFO, "{0} has connected", this);
++            ProxyServer.getInstance().getLogger().log(Level.INFO, "{0}", this);
+         }
+ 
+     }
+@@ -218,7 +218,7 @@ public class CaptchaBridge extends PacketHandler {
+     }
+ 
+     public String toString() {
+-        return "[" + this.con.getName() + "] <-> CaptchaBridge";
++        return "§c[" + this.con.getName() + "] §aПроходит капчу";
+     }
+ 
+     static {
+@@ -283,7 +283,7 @@ public class CaptchaBridge extends PacketHandler {
+                     int i = CaptchaBridge.a.get();
+ 
+                     if (i > 0) {
+-                        System.out.println("[Captcha] Connections per 5 seconds - " + i);
++                        System.out.println("[Captcha] Подлючений в течении 5 секунд - " + i);
+                     }
+                 }
+ 
+diff --git a/proxy/src/main/java/ru/yooxa/bungee/connection/CaptchaGenerator.java b/proxy/src/main/java/ru/yooxa/bungee/connection/CaptchaGenerator.java
+index f95a8c5..1a0edfa 100644
+--- a/proxy/src/main/java/ru/yooxa/bungee/connection/CaptchaGenerator.java
++++ b/proxy/src/main/java/ru/yooxa/bungee/connection/CaptchaGenerator.java
+@@ -1,6 +1,7 @@
+ package ru.yooxa.bungee.connection;
+ 
+ import com.github.cage.GCage;
++import net.md_5.bungee.BungeeCord;
+ import io.netty.buffer.ByteBuf;
+ import java.awt.image.BufferedImage;
+ import java.util.concurrent.ExecutorService;
+@@ -23,7 +24,7 @@ public class CaptchaGenerator {
+         Connection.min = min;
+         CaptchaGenerator.min = min;
+         CaptchaGenerator.max = max;
+-        System.out.println("Generate maps");
++        BungeeCord.getInstance().getLogger().info("§cГенерирую капчу");
+         long start = System.currentTimeMillis();
+         int all = max - min + 1;
+ 
+@@ -41,7 +42,7 @@ public class CaptchaGenerator {
+ 
+         while ((i = this.count.get()) != all) {
+             try {
+-                System.out.println(i + " of " + all + " [" + (int) ((double) i / (double) all * 100.0D) + " %]");
++                System.out.println(i + " из " + all + " [" + (int) ((double) i / (double) all * 100.0D) + " %]");
+                 Thread.sleep(1000L);
+             } catch (InterruptedException interruptedexception) {
+                 return;
+@@ -49,10 +50,10 @@ public class CaptchaGenerator {
+         }
+ 
+         executor.shutdown();
+-        System.out.println("Captcha generated (" + (System.currentTimeMillis() - start) + " ms)");
++        System.out.println("Капча сгенерирована за (" + (System.currentTimeMillis() - start) + " мс)");
+         start = System.currentTimeMillis();
+         System.gc();
+-        System.out.println("Performed GC (" + (System.currentTimeMillis() - start) + " ms)");
++        System.out.println("Память очищена за (" + (System.currentTimeMillis() - start) + " мс)");
+     }
+ 
+     public void increment() {
+diff --git a/proxy/src/main/java/ru/yooxa/database/SqlStorage.java b/proxy/src/main/java/ru/yooxa/database/SqlStorage.java
+index 8482b45..1587602 100644
+--- a/proxy/src/main/java/ru/yooxa/database/SqlStorage.java
++++ b/proxy/src/main/java/ru/yooxa/database/SqlStorage.java
+@@ -43,7 +43,6 @@ public class SqlStorage {
+                 config = new Configuration();
+                 config.set("Image-Generation-Threads", Integer.valueOf(2));
+                 config.set("Log-Join", Boolean.valueOf(true));
+-                config.set("Ping-Motd", "BungeeCord 1.8");
+                 config.set("Timeout", Integer.valueOf(15000));
+                 config.set("Message-Timeout", "[§cCaptcha§f] Вы слишком долго вводили капчу");
+                 config.set("Message-Enter", "[§cCaptcha§f] Введите номер с картинки в чат, чтобы пройти проверку. Открыть чат кнопкой \"T\" (английская)");
+@@ -61,7 +60,6 @@ public class SqlStorage {
+             this.threads = config.getInt("Image-Generation-Threads");
+             SqlStorage.timeout = config.getInt("Timeout");
+             SqlStorage.connectionsLog = config.getBoolean("Log-Join");
+-            SqlStorage.motd = config.getString("Ping-Motd", "BungeeCord 1.8");
+             SqlStorage.messageTimeout = config.getString("Message-Timeout");
+             SqlStorage.messageEnter = config.getString("Message-Enter");
+             SqlStorage.messageInvalid = config.getString("Message-Invalid");
+-- 
+2.6.1.windows.1
+

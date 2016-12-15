@@ -1,3 +1,7 @@
-Закинуть эту папку в готовый джарник с Waterfall
+Р—Р°РєРёРЅСѓС‚СЊ СЌС‚Сѓ РїР°РїРєСѓ РІ РіРѕС‚РѕРІС‹Р№ РґР¶Р°СЂРЅРёРє СЃ Waterfall
+Р—Р°РєРёРЅСѓС‚СЊ CaptchaFixer РІ РїР°РїРєСѓ СЃ РїР»Р°РіРёРЅР°РјРё РѕС‚ WaterFall]
 
 Drop this folder into WaterFall.jar
+Drop CaptchaFixer to WaterFall plugin folder
+
+Compile waterfall - "mvn clean -DskipTests=true install"
