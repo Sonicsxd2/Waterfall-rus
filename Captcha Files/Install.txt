@@ -1,7 +1,4 @@
-﻿Закинуть папку "net" в готовый джарник с Waterfall
-Закинуть CaptchaFixer в папку с плагинами от WaterFall]
+﻿Закинуть CaptchaFixer.jar в папку с плагинами от WaterFall
 
-Drop folder "net" into WaterFall.jar
-Drop CaptchaFixer to WaterFall plugin folder
+Drop CaptchaFixer.jar to WaterFall plugin folder
 
-Compile waterfall - "mvn clean -DskipTests=true install"
