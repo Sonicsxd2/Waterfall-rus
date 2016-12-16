@@ -1,4 +1,0 @@
-﻿Закинуть CaptchaFixer.jar в папку с плагинами от WaterFall
-
-Drop CaptchaFixer.jar to WaterFall plugin folder
-

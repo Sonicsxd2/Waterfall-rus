@@ -1,0 +1,60 @@
+From 6977f02c3f22b3f230e757c67ffd92ccd7a53017 Mon Sep 17 00:00:00 2001
+From: Dimatert9 <mikimouse100@mail.ru>
+Date: Fri, 16 Dec 2016 21:46:50 +0200
+Subject: [PATCH] fix captcha
+
+
+diff --git a/proxy/src/main/java/ru/yooxa/bungee/connection/CaptchaBridge.java b/proxy/src/main/java/ru/yooxa/bungee/connection/CaptchaBridge.java
+index 3876dc4..853f176 100644
+--- a/proxy/src/main/java/ru/yooxa/bungee/connection/CaptchaBridge.java
++++ b/proxy/src/main/java/ru/yooxa/bungee/connection/CaptchaBridge.java
+@@ -122,9 +122,6 @@ public class CaptchaBridge extends PacketHandler {
+         this.write(channel, Connection.playerPosition, protocol, id3);
+         this.resetCaptcha();
+         CaptchaBridge.connections.put(this.con, this);
+-        if (SqlStorage.connectionsLog) {
+-            ProxyServer.getInstance().getLogger().log(Level.INFO, "{0}", this);
+-        }
+ 
+     }
+ 
+@@ -146,16 +143,18 @@ public class CaptchaBridge extends PacketHandler {
+         if (!this.isBot()) {
+             this.con.disconnect(Util.exception(t));
+             this.con.getCh().close();
++            BungeeCord.getInstance().removeConnection( this.con );
+         } else {
+             this.con.getCh().close();
++            BungeeCord.getInstance().removeConnection( this.con );
+         }
+ 
+     }
+ 
+     public void disconnected(ChannelWrapper channel) throws Exception {
+         CaptchaBridge.connections.remove(this.con);
+-        this.con.getCh().close();
+         BungeeCord.getInstance().getPluginManager().callEvent(new PlayerDisconnectEvent(this.con));
++        BungeeCord.getInstance().removeConnection( this.con );
+     }
+ 
+     public void handle(KeepAlive alive) throws Exception {
+@@ -218,7 +217,7 @@ public class CaptchaBridge extends PacketHandler {
+     }
+ 
+     public String toString() {
+-        return "§c[" + this.con.getName() + "] §aПроходит капчу";
++        return "§c[" + this.con.getName() + "] §7<-> §bCaptcha";
+     }
+ 
+     static {
+@@ -264,6 +263,7 @@ public class CaptchaBridge extends PacketHandler {
+ 
+                             b = (CaptchaBridge) iterator.next();
+                             CaptchaBridge.connections.remove(b.getCon());
++                            
+                         }
+                     }
+ 
+-- 
+2.6.1.windows.1
+
