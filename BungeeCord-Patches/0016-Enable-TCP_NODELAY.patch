@@ -1,6 +1,6 @@
-From bcc815e0187479c61481452bfbd63e344f9961d5 Mon Sep 17 00:00:00 2001
+From 42276ffd55cc99d515f4d8c9faee60f8982e7a16 Mon Sep 17 00:00:00 2001
 From: Harry <me@harry5573.uk>
-Date: Wed, 24 Feb 2016 17:16:23 +0000
+Date: Sun, 24 Jan 2016 15:13:29 -0700
 Subject: [PATCH] Enable TCP_NODELAY.
 
 This is enabled by default on CraftBukkit/Spigot >= 1.8 and may help with network performance.
@@ -18,5 +18,5 @@ index a70a215..5ba31a4 100644
  
              ch.pipeline().addLast( TIMEOUT_HANDLER, new ReadTimeoutHandler( BungeeCord.getInstance().config.getTimeout(), TimeUnit.MILLISECONDS ) );
 -- 
-2.7.4 (Apple Git-66)
+2.6.1.windows.1
 
